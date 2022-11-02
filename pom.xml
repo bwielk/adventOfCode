@@ -10,6 +10,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<modules>
 		<module>notquitelisp</module>
+		<module>utils</module>
 	</modules>
 	<dependencies>
 		<dependency>
