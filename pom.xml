@@ -11,6 +11,7 @@
 	<modules>
 		<module>notquitelisp-day-1</module>
 		<module>utils</module>
+		<module>iwastoldtherewouldbenomath-day-2</module>
 	</modules>
 	<dependencies>
 		<dependency>

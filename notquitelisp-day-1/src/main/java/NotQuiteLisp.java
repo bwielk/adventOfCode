@@ -58,7 +58,7 @@ public class NotQuiteLisp {
 	}
 
 	private List<String> readFile(String schemaName){
-		List<String> content = FileReaderHelper.readFileAsLinesOfStrings( NotQuiteLisp.class.getClassLoader(),
+		List<String> content = FileReaderHelper.readFileAsLinesOfStrings( NotQuiteLisp.class,
 				schemaName );
 
 		if( content.size() != 1 ){
