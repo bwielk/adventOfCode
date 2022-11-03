@@ -1,30 +1,39 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SantaMap {
 
-	private boolean alreadyExists = false;
 	private final List<HouseCoords> historyOfVisitedHouses = new ArrayList<>();
 
-	public int countHouses( final String s ) {
-		HouseCoords house = new HouseCoords( 0,0 );
-		historyOfVisitedHouses.add( house );
+	public int runCountingHousesFromSchema(String schemaName){
+		String input = readSchemaFile( schemaName );
+		return countHouses( input );
+	}
 
-		for(int i=0; i<s.length(); i++){
-			char currentChar = s.charAt( i );
-			Directions direction = defineDirection(currentChar);
-			house = new HouseCoords( house.getX()+direction.getX(), house.getY()+direction.getY() );
-			checkIfTheHouseHasAlreadyBeenVisited(house);
-			if(!alreadyExists){
-				historyOfVisitedHouses.add( house );
+	public int countHouses( final String entry ) {
+		String cleanedUpEntry = entry.toLowerCase()
+				.replace( " ", "" )
+				.replaceAll( "[^v<>^]", "" );
+
+		if ( !cleanedUpEntry.isEmpty() ) {
+			HouseCoords house = new HouseCoords( 0, 0 );
+			historyOfVisitedHouses.add( house );
+			for ( int i = 0; i < cleanedUpEntry.length(); i++ ) {
+				char currentChar = cleanedUpEntry.charAt( i );
+				Directions direction = defineDirection( currentChar );
+				house = new HouseCoords( house.getX() + direction.getX(),
+						house.getY() + direction.getY() );
+				checkIfTheHouseHasAlreadyBeenVisited( house );
 			}
 		}
 		return historyOfVisitedHouses.size();
 	}
 
-	private Directions defineDirection(char character){
+	private Directions defineDirection( char character ) {
 		Directions direction;
-		switch ( character ){
+		switch ( character ) {
 		case '^':
 			direction = Directions.UP;
 			break;
@@ -39,17 +48,26 @@ public class SantaMap {
 			break;
 		default:
 			direction = Directions.NOTHING;
+			break;
 		}
 		return direction;
 	}
 
-	private void checkIfTheHouseHasAlreadyBeenVisited(HouseCoords house){
-		for ( HouseCoords currentHouses : historyOfVisitedHouses ) {
-			if ( currentHouses.getX() == house.getX() && currentHouses.getY() == house.getY() ) {
-				alreadyExists = true;
-				break;
-			}
+	private void checkIfTheHouseHasAlreadyBeenVisited( HouseCoords house ) {
+		List<HouseCoords> hsc = historyOfVisitedHouses.stream().
+				filter( h ->  h.getX() == house.getX() && h.getY() == house.getY()).collect(
+				Collectors.toList());
+		if(hsc.isEmpty()){
+			historyOfVisitedHouses.add( house );
 		}
+	}
+
+	private String readSchemaFile(String schemaName){
+		List<String> parsedInput = FileReaderHelper.readFileAsLinesOfStrings( SantaMap.class, schemaName );
+		if(parsedInput.size() != 1){
+			throw new IllegalStateException( ErrorMessages.TOO_MANY_LINES);
+		}
+		return parsedInput.get( 0 );
 	}
 }
 
