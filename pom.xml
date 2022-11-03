@@ -12,6 +12,7 @@
 		<module>notquitelisp-day-1</module>
 		<module>utils</module>
 		<module>iwastoldtherewouldbenomath-day-2</module>
+		<module>perfectlysphericalhousesinavacuum</module>
 	</modules>
 	<dependencies>
 		<dependency>
