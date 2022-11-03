@@ -1,0 +1,13 @@
+1
+x1
+1x
+1x2x
+x1x2x
+1xx2x
+2x3x4
+2x3x4x
+2x3x4xz
+1x3x3x3
+1x3x3x3x
+x1x3x3x3x
+20x1x20
