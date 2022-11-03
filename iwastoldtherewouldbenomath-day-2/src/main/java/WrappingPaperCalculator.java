@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 
 public class WrappingPaperCalculator {
 
-	public int calculateFromFile( String inputSchema ) {
+	public int calculateAreaForWrappingPaper( String inputSchema ) {
 
 		int result = 0;
 
@@ -13,22 +13,23 @@ public class WrappingPaperCalculator {
 
 		for ( int i = 0; i < contents.size(); i++ ) {
 			String currentLine = contents.get( i );
-			result += parseEntry( currentLine );
+			result += parseEntryForAreaOfWrappingPaper( currentLine );
 		}
 		return result;
 	}
 
-	public int parseEntry( String entry ) {
+	public int parseEntryForAreaOfWrappingPaper( String entry ) {
 		int result = 0;
-		String cleanedEntry = entry.replace( " ", "" )
+		String cleanedEntry =
+				entry.replace( " ", "" )
 				.trim()
-				.toLowerCase()
-				.replaceAll( "/^v[1-9x]/g", "" );
+				.toLowerCase();
 
-		List<String> separated = Arrays.stream( cleanedEntry.split( "x" ) )
+		String inputWithoutInvalidCharacters = cleanedEntry.replaceAll( "[^0-9x]", "" );
+
+		List<String> separated = Arrays.stream( inputWithoutInvalidCharacters.split( "x" ) )
 				.filter( x -> !x.equals( "" ) )
 				.collect( Collectors.toList() );
-
 
 		List<Integer> measurements = separated.stream()
 				.map( Integer::parseInt )
@@ -39,12 +40,7 @@ public class WrappingPaperCalculator {
 			int sideC = measurements.get( 0 ) * measurements.get( 2 );
 
 			List<Integer> collectionOfAreaValues = Arrays.asList( sideA, sideB, sideC );
-			int slack = collectionOfAreaValues.get( 0 );
-			for(int i=0; i<collectionOfAreaValues.size(); i++){
-				if(collectionOfAreaValues.get( i ) < slack){
-					slack = collectionOfAreaValues.get( i );
-				}
-			}
+			int slack = ListHelper.identifyTheSmallestValueInArrayListOfIntegers( collectionOfAreaValues );
 			result += 2*(sideA+sideB+sideC)+slack;
 		}
 		return result;
@@ -52,7 +48,7 @@ public class WrappingPaperCalculator {
 
 	public static void main( String[] args ) {
 		WrappingPaperCalculator wrappingPaperCalculator = new WrappingPaperCalculator();
-		int results = wrappingPaperCalculator.calculateFromFile( "input.txt" );
+		int results = wrappingPaperCalculator.calculateAreaForWrappingPaper( "input.txt" );
 		System.out.println(results);
 	}
 }
