@@ -5,6 +5,12 @@ import java.util.stream.Collectors;
 
 public class GiftStationaryCalculator {
 
+	/***
+	 *
+	 * @param inputSchema - path to the file with inputs
+	 * @return - area of wrapping paper
+	 */
+
 	public int calculateAreaForWrappingPaper( String inputSchema ) {
 		int result = 0;
 
@@ -17,6 +23,12 @@ public class GiftStationaryCalculator {
 		}
 		return result;
 	}
+
+	/***
+	 *
+	 * @param inputSchema - path to the file with inputs
+	 * @return - length of ribbon used
+	 */
 
 	public int calculateRibbonLengthForBoxes( String inputSchema ) {
 		int result = 0;
@@ -32,6 +44,12 @@ public class GiftStationaryCalculator {
 		return result;
 	}
 
+	/***
+	 *
+	 * @param entry - entry with measurements data
+	 * @return - calcualted length of ribbon to be used
+	 */
+
 	public int parseEntryForLengthOfRibbon( String entry ) {
 		int results = 0;
 
@@ -45,6 +63,12 @@ public class GiftStationaryCalculator {
 
 		return results;
 	}
+
+	/***
+	 *
+	 * @param entry - entry with measurements data
+	 * @return - area of wrapping paper
+	 */
 
 	public int parseEntryForAreaOfWrappingPaper( String entry ) {
 		int result = 0;
@@ -63,6 +87,12 @@ public class GiftStationaryCalculator {
 		}
 		return result;
 	}
+
+	/***
+	 *
+	 * @param entry - raw entry to be parsed
+	 * @return - list of measurements data
+	 */
 
 	public List<Integer> parseEntries( String entry ) {
 		String cleanedEntry = entry.replace( " ", "" ).trim().toLowerCase();
