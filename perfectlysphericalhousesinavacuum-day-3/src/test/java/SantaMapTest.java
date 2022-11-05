@@ -43,7 +43,7 @@ class SantaMapTest {
 
 	@Test
 	public void santaVisitsTwoHousesMultipleTimesEntriesWithInvalidCharactersInTheBeginningAndEndOfEntry() {
-		int results = santaMap.countHouses( ".^v^v.!£", RunningMode.SANTA_ONLY);
+		int results = santaMap.countHouses( ".^v^v.!£", RunningMode.SANTA_ONLY );
 		int expectedResults = 2;
 		assertThat( results ).isEqualTo( expectedResults );
 	}
@@ -57,7 +57,7 @@ class SantaMapTest {
 
 	@Test
 	public void santaDoesNotProcessAnEmptyEntry() {
-		int results = santaMap.countHouses( "", RunningMode.SANTA_ONLY);
+		int results = santaMap.countHouses( "", RunningMode.SANTA_ONLY );
 		int expectedResults = 0;
 		assertThat( results ).isEqualTo( expectedResults );
 	}
@@ -85,12 +85,14 @@ class SantaMapTest {
 
 	@Test
 	public void santaDoesNotProcessANull() {
-		assertThrows( NullPointerException.class, () -> santaMap.countHouses( null , RunningMode.SANTA_ONLY) );
+		assertThrows( NullPointerException.class,
+				() -> santaMap.countHouses( null, RunningMode.SANTA_ONLY ) );
 	}
 
 	@Test
 	public void processingOfTheSantaMapSimpleInputWithOneRowOfDirections() {
-		int results = santaMap.runCountingHousesFromSchema( "simpleInput.txt", RunningMode.SANTA_ONLY );
+		int results = santaMap.runCountingHousesFromSchema( "simpleInput.txt",
+				RunningMode.SANTA_ONLY );
 		int expectedResults = 2;
 		assertThat( results ).isEqualTo( expectedResults );
 	}
@@ -98,13 +100,15 @@ class SantaMapTest {
 	@Test
 	public void processingOfTheSantaMapSimpleInputWithManyRowsOfDirections() {
 		Exception e = assertThrows( IllegalStateException.class,
-				() -> santaMap.runCountingHousesFromSchema( "multipleLineInput.txt", RunningMode.SANTA_ONLY ) );
+				() -> santaMap.runCountingHousesFromSchema( "multipleLineInput.txt",
+						RunningMode.SANTA_ONLY ) );
 		assertThat( e.getMessage() ).isEqualTo( ErrorMessages.TOO_MANY_LINES );
 	}
 
 	@Test
 	public void processingOfTheSantaMapSimpleEmptyInputFileWithEmptyLines() {
-		int results = santaMap.runCountingHousesFromSchema( "emptyFile.txt", RunningMode.SANTA_ONLY );
+		int results = santaMap.runCountingHousesFromSchema( "emptyFile.txt",
+				RunningMode.SANTA_ONLY );
 		int expectedResults = 0;
 		assertThat( results ).isEqualTo( expectedResults );
 	}
@@ -139,7 +143,8 @@ class SantaMapTest {
 
 	@Test
 	public void readingAnActualMapInRoboSantaMode() {
-		int results = santaMap.runCountingHousesFromSchema( "input.txt", RunningMode.WITH_ROBO_SANTA );
+		int results = santaMap.runCountingHousesFromSchema( "input.txt",
+				RunningMode.WITH_ROBO_SANTA );
 		int expectedResults = 2639;
 		assertThat( results ).isEqualTo( expectedResults );
 	}

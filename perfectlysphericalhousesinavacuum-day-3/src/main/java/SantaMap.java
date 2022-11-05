@@ -13,18 +13,20 @@ public class SantaMap {
 
 	public int countHouses( final String entry, final RunningMode runningMode ) {
 
-		String cleanedUpEntry = cleanUpEntry(entry);
+		String cleanedUpEntry = cleanUpEntry( entry );
 		HouseCoords houseVisitedBySanta = new HouseCoords( 0, 0 );
 		HouseCoords houseVisitedByRoboSanta = new HouseCoords( 0, 0 );
 
 		if ( !cleanedUpEntry.isEmpty() ) {
 			historyOfVisitedHouses.add( houseVisitedBySanta );
-			for ( int i = 0; i < cleanedUpEntry.length(); i++) {
+			for ( int i = 0; i < cleanedUpEntry.length(); i++ ) {
 				char currentChar = cleanedUpEntry.charAt( i );
-				houseVisitedBySanta = executeAMove(currentChar, houseVisitedBySanta);
-				if(i+1<cleanedUpEntry.length() && runningMode.equals( RunningMode.WITH_ROBO_SANTA )){
-					char roboSantaChar = cleanedUpEntry.charAt( i+1 );
-					houseVisitedByRoboSanta = executeAMove( roboSantaChar, houseVisitedByRoboSanta );
+				houseVisitedBySanta = executeAMove( currentChar, houseVisitedBySanta );
+				if ( i + 1 < cleanedUpEntry.length() && runningMode.equals(
+						RunningMode.WITH_ROBO_SANTA ) ) {
+					char roboSantaChar = cleanedUpEntry.charAt( i + 1 );
+					houseVisitedByRoboSanta = executeAMove( roboSantaChar,
+							houseVisitedByRoboSanta );
 					i++;
 				}
 			}
@@ -72,19 +74,11 @@ public class SantaMap {
 		return parsedInput.get( 0 );
 	}
 
-	private String cleanUpEntry( String entry ){
-		String cleanedUpEntry = entry.toLowerCase()
-				.replace( " ", "" )
-				.replaceAll( "[^v<>^]", "" );
-		return cleanedUpEntry;
+	private String cleanUpEntry( String entry ) {
+		return entry.toLowerCase().replace( " ", "" ).replaceAll( "[^v<>^]", "" );
 	}
 
-	public static void main( String[] args ) {
-		SantaMap santaMap = new SantaMap();
-		System.out.println(santaMap.runCountingHousesFromSchema( "input.txt" , RunningMode.WITH_ROBO_SANTA));
-	}
-
-	private HouseCoords executeAMove(char currentChar, HouseCoords visitedHouse){
+	private HouseCoords executeAMove( char currentChar, HouseCoords visitedHouse ) {
 		Directions direction = defineDirection( currentChar );
 		visitedHouse = new HouseCoords( visitedHouse.getX() + direction.getX(),
 				visitedHouse.getY() + direction.getY() );
@@ -93,4 +87,3 @@ public class SantaMap {
 	}
 
 }
-

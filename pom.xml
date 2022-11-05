@@ -12,7 +12,8 @@
 		<module>notquitelisp-day-1</module>
 		<module>utils</module>
 		<module>iwastoldtherewouldbenomath-day-2</module>
-		<module>perfectlysphericalhousesinavacuum</module>
+		<module>perfectlysphericalhousesinavacuum-day-3</module>
+		<module>doesnthehaveinternelvesforthis-day-5</module>
 	</modules>
 	<dependencies>
 		<dependency>
@@ -25,6 +26,12 @@
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>${assertj-code.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
