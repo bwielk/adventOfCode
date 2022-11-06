@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChristmasLightsManagement {
 
-	public static final String VERIFY_SENTENCE_REGEX = "^(?=.*(turn on|turn off|toggle)+( )+(.)+(through)).*$";
-	public static final String CLEAN_UP_REGEX = "(turn on|turn off|toggle|through )";
+	public static final String VERIFY_SENTENCE_REGEX = "^((turn off )|(turn on )|(toggle ))+[\\d]{1,3}+,+[\\d]{1,3}+ through +[\\d]{1,3}+,+[\\d]{1,3}";
+	public static final String CLEAN_UP_REGEX = "(turn on |turn off |toggle |through )";
 	private final boolean[][] christmasLightsMatrix;
 
 	public ChristmasLightsManagement( boolean[][] christmasLightsMatrix ) {
@@ -13,12 +14,27 @@ public class ChristmasLightsManagement {
 	}
 
 	public boolean verifyEntryMatchesSentenceModel( String entry ) {
-		return entry.matches( VERIFY_SENTENCE_REGEX );
+		return entry.
+				trim()
+				.toLowerCase()
+				.matches( VERIFY_SENTENCE_REGEX );
+	}
+
+	public LightsAction specifyActionFromEntry( String entry ) {
+		LightsAction lightsAction = null;
+		if(entry.startsWith( "turn on" )){
+			lightsAction = LightsAction.TURN_ON;
+		}else if(entry.startsWith( "turn off" )){
+			lightsAction = LightsAction.TURN_OFF;
+		}else if(entry.startsWith( "toggle" )){
+			lightsAction = LightsAction.TOGGLE;
+		}
+		return lightsAction;
 	}
 
 	public List<ChristmasLightCoords> parseEntryForChristmasLightCoords( String entry ) {
-		String cleanedUp = entry.trim().replaceAll( CLEAN_UP_REGEX, "" );
-		String[] splitCoordsAsString = cleanedUp.trim().split( " " );
+		String cleanedUp = entry.replaceAll( CLEAN_UP_REGEX, "" );
+		String[] splitCoordsAsString = cleanedUp.split( " " );
 		String[] firstChristmasLightCoords = splitCoordsAsString[0].split( "," );
 		String[] secondChristmasLightCoords = splitCoordsAsString[1].split( "," );
 		List<ChristmasLightCoords> lights = new ArrayList<>();
@@ -43,7 +59,7 @@ public class ChristmasLightsManagement {
 		return lights;
 	}
 
-	public void switchLightsOnOrOff(
+	public void processLightsRequest(
 			List<ChristmasLightCoords> christmasLightsCoordsToManipulateCoords,
 			LightsAction lightsAction ) {
 		if ( christmasLightsCoordsToManipulateCoords.size() == 2 ) {
@@ -64,18 +80,26 @@ public class ChristmasLightsManagement {
 							christmasLightsMatrix[x][y] = false;
 						}
 						break;
+					case TOGGLE:
+						christmasLightsMatrix[x][y] = !christmasLightsMatrix[x][y];
+						break;
 					}
 				}
 			}
 		}
 	}
 
-	public void toggleLights() {
-		for ( int x = 0; x <= christmasLightsMatrix.length - 1; x++ ) {
-			for ( int y = 0; y <= christmasLightsMatrix[x].length - 1; y++ ) {
-				christmasLightsMatrix[x][y] = !christmasLightsMatrix[x][y];
+	public int processLightsSchema( String schemaInput ) {
+		List<String> entries = readTheSchemaFile(schemaInput);
+		for ( String entry : entries ) {
+			if ( verifyEntryMatchesSentenceModel( entry ) ) {
+				List<ChristmasLightCoords> actionCoords = parseEntryForChristmasLightCoords(
+						entry );
+				LightsAction lightsAction = specifyActionFromEntry( entry );
+				processLightsRequest( actionCoords, lightsAction );
 			}
 		}
+		return numberOfLightsLit();
 	}
 
 	public int numberOfLightsLit() {
@@ -89,5 +113,17 @@ public class ChristmasLightsManagement {
 			}
 		}
 		return lightsOn;
+	}
+
+	public List<String> readTheSchemaFile(String schemaInput){
+		return FileReaderHelper.readFileAsLinesOfStrings(
+				ChristmasLightsManagement.class, schemaInput ).stream()
+				.map( String::trim )
+				.filter( e -> !e.isEmpty() || !e.isBlank() )
+				.collect( Collectors.toList());
+	}
+
+	public static void main( String[] args ) {
+
 	}
 }

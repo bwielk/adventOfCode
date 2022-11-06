@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,23 +27,40 @@ class ChristmasLightsManagementTestCoords {
 	}
 
 	private static Stream<Arguments> entriesToBeVerified() {
-		return Stream.of( Arguments.of( "turn on 887,9 through 959,629", true ),
+		return Stream.of(
+				Arguments.of( "turn on 887,9 through 959,629", true ),
+				Arguments.of( "turn on 887,91 through 959,621", true ),
+				Arguments.of( "turn on 887,91 through 959,6", true ),
 				Arguments.of( "turn off 887,900 through 959,629", true ),
 				Arguments.of( "turn off 887,900 through 959,629", true ),
 				Arguments.of( "     turn off 887,900 through 959,629     ", true ),
 				Arguments.of( "switch on 887,900 up to 959,629", false ),
-				Arguments.of( "turn off 8 through 959629", true ),
+				Arguments.of( "turn off 8 through 959629", false ),
 				Arguments.of( "from 887,900 up to 959,629", false ),
 				Arguments.of( "887,900 through 959,629", false ),
-				Arguments.of( "switch off 887,911 through 959,629", false ) );
+				Arguments.of( "switch off 887,911 through 959,629", false ),
+				Arguments.of( "switch on off 887,911 through 959,629", false ),
+				Arguments.of( "toggle off 887,911 through 959,629", false ),
+				Arguments.of( "toggle on 887,911 through 959,629", false ),
+				Arguments.of( "toggle off turn on 887,911 through 959,629", false ),
+				Arguments.of( "turn off toggle on 887,911 through 959,629", false ),
+				Arguments.of( "turn off toggle on 887,911 through 959,629", false ),
+				Arguments.of( "887,911 turn off 959,629 turn on", false ));
+	}
+
+	private static Stream<Arguments> expectedAction() {
+		return Stream.of(
+				Arguments.of( "turn on 887,9 through 959,629", LightsAction.TURN_ON ),
+				Arguments.of( "turn off 887,900 through 959,629", LightsAction.TURN_OFF ),
+				Arguments.of( "toggle 887,900 through 959,629", LightsAction.TOGGLE ));
 	}
 
 	private static Stream<Arguments> entriesToBeParsed() {
 		return Stream.of( Arguments.of( "turn off 539,243 through 559,965",
 				new ChristmasLightCoords( 539, 243 ), new ChristmasLightCoords( 559, 965 ) ),
-				Arguments.of( "    turn on 0,0 through 999,999    ",
+				Arguments.of( "turn on 0,0 through 999,999",
 						new ChristmasLightCoords( 0, 0 ), new ChristmasLightCoords( 999, 999 ) ),
-				Arguments.of( "    toggle 100,100 through 999,999    ",
+				Arguments.of( "toggle 100,100 through 999,999",
 						new ChristmasLightCoords( 100, 100 ),
 						new ChristmasLightCoords( 999, 999 ) ) );
 	}
@@ -53,6 +71,14 @@ class ChristmasLightsManagementTestCoords {
 		boolean actualResult = christmasLightsManagement.verifyEntryMatchesSentenceModel( entry );
 		assertThat( actualResult ).isEqualTo( result );
 	}
+
+	@ParameterizedTest
+	@MethodSource("expectedAction")
+	public void actionCanBeExtractedFromEntry( String entry, LightsAction expectedAction ) {
+		LightsAction actualResult = christmasLightsManagement.specifyActionFromEntry( entry );
+		assertThat( actualResult ).isEqualTo( expectedAction );
+	}
+
 
 	@ParameterizedTest
 	@MethodSource("entriesToBeParsed")
@@ -91,7 +117,7 @@ class ChristmasLightsManagementTestCoords {
 	public void turningOnAllLightsInGrid() {
 		List<ChristmasLightCoords> christmasLightsToManipulateCoords = christmasLightsManagement.parseEntryForChristmasLightCoords(
 				"turn on 0,0 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsToManipulateCoords,
+		christmasLightsManagement.processLightsRequest( christmasLightsToManipulateCoords,
 				LightsAction.TURN_ON );
 		int areLightsAreOn = christmasLightsManagement.numberOfLightsLit();
 		assertThat( areLightsAreOn ).isEqualTo( 9 );
@@ -101,11 +127,11 @@ class ChristmasLightsManagementTestCoords {
 	public void turningOffAllLightsInGrid() {
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOn = christmasLightsManagement.parseEntryForChristmasLightCoords(
 				"turn on 0,0 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOn,
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOn,
 				LightsAction.TURN_ON );
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOff = christmasLightsManagement.parseEntryForChristmasLightCoords(
 				"turn off 0,0 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOff,
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOff,
 				LightsAction.TURN_OFF );
 		int areLightsAreOn = christmasLightsManagement.numberOfLightsLit();
 		assertThat( areLightsAreOn ).isEqualTo( 0 );
@@ -115,7 +141,7 @@ class ChristmasLightsManagementTestCoords {
 	public void turnOnOnly4LightsOutOf9() {
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOn = christmasLightsManagement.parseEntryForChristmasLightCoords(
 				"turn on 0,0 through 1,1" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOn,
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOn,
 				LightsAction.TURN_ON );
 		int areLightsAreOn = christmasLightsManagement.numberOfLightsLit();
 		assertThat( areLightsAreOn ).isEqualTo( 4 );
@@ -125,11 +151,11 @@ class ChristmasLightsManagementTestCoords {
 	public void turnOffOnly4LightsOutOf9() {
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOn = christmasLightsManagement.parseEntryForChristmasLightCoords(
 				"turn on 0,0 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOn,
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOn,
 				LightsAction.TURN_ON );
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOff = christmasLightsManagement.parseEntryForChristmasLightCoords(
 				"turn on 1,1 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOff,
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOff,
 				LightsAction.TURN_OFF );
 		int areLightsAreOn = christmasLightsManagement.numberOfLightsLit();
 		assertThat( areLightsAreOn ).isEqualTo( 5 );
@@ -137,27 +163,86 @@ class ChristmasLightsManagementTestCoords {
 
 	@Test
 	public void toggling5LightsOffResultsIn5LightsOnAnd4Off() {
+		String turnOnStatement = "turn on 0,0 through 1,1";
+		String toggleStatement = "toggle 0,0 through 2,2";
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOn = christmasLightsManagement.parseEntryForChristmasLightCoords(
-				"turn on 0,0 through 1,1" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOn,
-				LightsAction.TURN_ON );
-		christmasLightsManagement.toggleLights();
+				turnOnStatement );
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOn,
+				christmasLightsManagement.specifyActionFromEntry( turnOnStatement ));
+		List<ChristmasLightCoords> christmasLightsCoordsSToggle = christmasLightsManagement.parseEntryForChristmasLightCoords(
+				 toggleStatement);
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSToggle,
+				christmasLightsManagement.specifyActionFromEntry( toggleStatement ));
 		int areLightsAreOn = christmasLightsManagement.numberOfLightsLit();
 		assertThat( areLightsAreOn ).isEqualTo( 5 );
 	}
 
 	@Test
 	public void toggling5LightsOnResultsIn5LightsOffAnd4On() {
+		String turnOnStatement = "turn on 0,0 through 2,2";
+		String turnOffStatement = "turn off 1,1 through 2,2";
+		String toggleStatement = "toggle 0,0 through 2,2";
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOn = christmasLightsManagement.parseEntryForChristmasLightCoords(
-				"turn on 0,0 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOn,
-				LightsAction.TURN_ON );
+				turnOnStatement );
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOn,
+				christmasLightsManagement.specifyActionFromEntry( turnOnStatement ) );
 		List<ChristmasLightCoords> christmasLightsCoordsSwitchedOff = christmasLightsManagement.parseEntryForChristmasLightCoords(
-				"turn off 1,1 through 2,2" );
-		christmasLightsManagement.switchLightsOnOrOff( christmasLightsCoordsSwitchedOff,
-				LightsAction.TURN_OFF );
-		christmasLightsManagement.toggleLights();
+				turnOffStatement );
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSwitchedOff,
+				christmasLightsManagement.specifyActionFromEntry( turnOffStatement ) );
+		List<ChristmasLightCoords> christmasLightsCoordsSToggle = christmasLightsManagement.parseEntryForChristmasLightCoords(
+				toggleStatement );
+		christmasLightsManagement.processLightsRequest( christmasLightsCoordsSToggle,
+				christmasLightsManagement.specifyActionFromEntry( toggleStatement ) );
 		int areLightsAreOn = christmasLightsManagement.numberOfLightsLit();
 		assertThat( areLightsAreOn ).isEqualTo( 4 );
+	}
+
+	@Test
+	public void processChristmasLightsInput() {
+		int actualResults = christmasLightsManagement.processLightsSchema("correctlyFormattedEntry.txt");
+		assertThat( actualResults ).isEqualTo( 4 );
+	}
+
+	@Test
+	@Disabled("Investigation required")
+	public void fileProcessingFailsIfAtLeastOneCoordIsLessThan0() {
+		Exception e = assertThrows( IllegalStateException.class,
+				() -> christmasLightsManagement.processLightsSchema("correctEntriesWithAnEntryWithCoordsLessThan0.txt") );
+		assertThat( e.getMessage() ).isEqualTo(
+				"Bad coordinates - coordinates must be greater than 0!" );
+	}
+
+	@Test
+	@Disabled("Investigation required")
+	public void fileProcessingFailsIfStartCoordsAreLessThanTheEndCoords() {
+		Exception e = assertThrows( IllegalStateException.class,
+				() -> christmasLightsManagement.processLightsSchema("correctEntriesWithAnEntryWithStartCoordsLessThanEndCoords.txt"));
+		assertThat( e.getMessage() ).isEqualTo(
+				"Bad coordinates - start light must have lower coords values than the end one!" );
+	}
+
+	@Test
+	public void fileWithoutRecordsReturns0() {
+		int actualResults = christmasLightsManagement.processLightsSchema("emptyFile.txt");
+		assertThat( actualResults ).isEqualTo( 0 );
+	}
+
+	@Test
+	public void wronglyFormulatedEntriesAreIgnoredAndPrcessingContinues() {
+		int actualResults = christmasLightsManagement.processLightsSchema("correctlyFormattedEntriesWithSomeIncorrectlyFormulatedOnes.txt");
+		assertThat( actualResults ).isEqualTo( 5 );
+	}
+
+	@Test
+	public void processTheActualChristmasLightsSchema() {
+		christmasLightsMatrixCoords = new boolean[1000][1000];
+		for ( int x = 0; x < christmasLightsMatrixCoords.length; x++ ) {
+			Arrays.fill( christmasLightsMatrixCoords[x], false );
+		}
+		ChristmasLightsManagement christmasLightsManagement = new ChristmasLightsManagement( christmasLightsMatrixCoords );
+		int actualResult = christmasLightsManagement.processLightsSchema( "input.txt" );
+		assertThat( actualResult ).isEqualTo( 377891 );
+
 	}
 }

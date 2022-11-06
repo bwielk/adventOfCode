@@ -1,5 +1,6 @@
 public enum LightsAction {
 
 	TURN_ON,
-	TURN_OFF;
+	TURN_OFF,
+	TOGGLE;
 }
