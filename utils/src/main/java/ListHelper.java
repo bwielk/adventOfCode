@@ -11,4 +11,13 @@ public class ListHelper {
 		}
 		return result;
 	}
+
+	public static boolean checkIfAllIntegersInAListAreGreaterThanZero( List<Integer> integerList){
+		for ( Integer integer : integerList ) {
+			if ( integer < 0 ) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
