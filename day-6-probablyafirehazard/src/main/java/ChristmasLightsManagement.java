@@ -7,26 +7,24 @@ public class ChristmasLightsManagement {
 
 	public static final String VERIFY_SENTENCE_REGEX = "^((turn off )|(turn on )|(toggle ))+[\\d]{1,3}+,+[\\d]{1,3}+ through +[\\d]{1,3}+,+[\\d]{1,3}";
 	public static final String CLEAN_UP_REGEX = "(turn on |turn off |toggle |through )";
-	private final boolean[][] christmasLightsMatrix;
+	private final ChristmasLight[][] christmasLightsMatrix;
 
-	public ChristmasLightsManagement( boolean[][] christmasLightsMatrix ) {
+	public ChristmasLightsManagement( ChristmasLight[][] christmasLightsMatrix ) {
 		this.christmasLightsMatrix = christmasLightsMatrix;
 	}
 
 	public boolean verifyEntryMatchesSentenceModel( String entry ) {
 		return entry.
-				trim()
-				.toLowerCase()
-				.matches( VERIFY_SENTENCE_REGEX );
+				trim().toLowerCase().matches( VERIFY_SENTENCE_REGEX );
 	}
 
 	public LightsAction specifyActionFromEntry( String entry ) {
 		LightsAction lightsAction = null;
-		if(entry.startsWith( "turn on" )){
+		if ( entry.startsWith( "turn on" ) ) {
 			lightsAction = LightsAction.TURN_ON;
-		}else if(entry.startsWith( "turn off" )){
+		} else if ( entry.startsWith( "turn off" ) ) {
 			lightsAction = LightsAction.TURN_OFF;
-		}else if(entry.startsWith( "toggle" )){
+		} else if ( entry.startsWith( "toggle" ) ) {
 			lightsAction = LightsAction.TOGGLE;
 		}
 		return lightsAction;
@@ -71,17 +69,27 @@ public class ChristmasLightsManagement {
 				for ( int y = christmasLightCoordsCoord1.getY(); y <= christmasLightCoordsCoord2.getY(); y++ ) {
 					switch ( lightsAction ) {
 					case TURN_ON:
-						if ( !christmasLightsMatrix[x][y] ) {
-							christmasLightsMatrix[x][y] = true;
+						if ( !christmasLightsMatrix[x][y].isSwitchedOn() ) {
+							christmasLightsMatrix[x][y].switchOn();
 						}
+						christmasLightsMatrix[x][y] = increaseBrightness(
+								christmasLightsMatrix[x][y], 1 );
 						break;
 					case TURN_OFF:
-						if ( christmasLightsMatrix[x][y] ) {
-							christmasLightsMatrix[x][y] = false;
+						if ( christmasLightsMatrix[x][y].isSwitchedOn() ) {
+							christmasLightsMatrix[x][y].switchOff();
 						}
+						christmasLightsMatrix[x][y] = decreaseBrightness(
+								christmasLightsMatrix[x][y], 1 );
 						break;
 					case TOGGLE:
-						christmasLightsMatrix[x][y] = !christmasLightsMatrix[x][y];
+						if ( christmasLightsMatrix[x][y].isSwitchedOn() ) {
+							christmasLightsMatrix[x][y].switchOff();
+						} else {
+							christmasLightsMatrix[x][y].switchOn();
+						}
+						christmasLightsMatrix[x][y] = increaseBrightness(
+								christmasLightsMatrix[x][y], 2 );
 						break;
 					}
 				}
@@ -89,8 +97,20 @@ public class ChristmasLightsManagement {
 		}
 	}
 
-	public int processLightsSchema( String schemaInput ) {
-		List<String> entries = readTheSchemaFile(schemaInput);
+	public ChristmasLight increaseBrightness( ChristmasLight christmasLight, int value ) {
+		christmasLight.setBrightness( christmasLight.getBrightness() + value );
+		return christmasLight;
+	}
+
+	public ChristmasLight decreaseBrightness( ChristmasLight christmasLight, int value ) {
+		if ( christmasLight.getBrightness() > 0 ) {
+			christmasLight.setBrightness( christmasLight.getBrightness() - value );
+		}
+		return christmasLight;
+	}
+
+	public ChristmasLightsManagementReadings processLightsSchema( String schemaInput ) {
+		List<String> entries = readTheSchemaFile( schemaInput );
 		for ( String entry : entries ) {
 			if ( verifyEntryMatchesSentenceModel( entry ) ) {
 				List<ChristmasLightCoords> actionCoords = parseEntryForChristmasLightCoords(
@@ -99,31 +119,29 @@ public class ChristmasLightsManagement {
 				processLightsRequest( actionCoords, lightsAction );
 			}
 		}
-		return numberOfLightsLit();
+		return gatherFinalReadings( schemaInput );
 	}
 
-	public int numberOfLightsLit() {
+	public ChristmasLightsManagementReadings gatherFinalReadings( String schemaName ) {
 		int lightsOn = 0;
+		int totalBrightness = 0;
 		for ( int x = 0; x < christmasLightsMatrix.length; x++ ) {
 			for ( int y = 0; y < christmasLightsMatrix[x].length; y++ ) {
-				if ( christmasLightsMatrix[x][y] ) {
+				if ( christmasLightsMatrix[x][y].isSwitchedOn() ) {
 					lightsOn++;
 				}
-				;
+				totalBrightness += christmasLightsMatrix[x][y].getBrightness();
 			}
 		}
-		return lightsOn;
+		return new ChristmasLightsManagementReadings( lightsOn, totalBrightness, schemaName );
 	}
 
-	public List<String> readTheSchemaFile(String schemaInput){
-		return FileReaderHelper.readFileAsLinesOfStrings(
-				ChristmasLightsManagement.class, schemaInput ).stream()
+	public List<String> readTheSchemaFile( String schemaInput ) {
+		return FileReaderHelper.readFileAsLinesOfStrings( ChristmasLightsManagement.class,
+				schemaInput )
+				.stream()
 				.map( String::trim )
 				.filter( e -> !e.isEmpty() || !e.isBlank() )
-				.collect( Collectors.toList());
-	}
-
-	public static void main( String[] args ) {
-
+				.collect( Collectors.toList() );
 	}
 }
