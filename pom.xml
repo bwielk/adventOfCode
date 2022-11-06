@@ -14,6 +14,7 @@
 		<module>iwastoldtherewouldbenomath-day-2</module>
 		<module>perfectlysphericalhousesinavacuum-day-3</module>
 		<module>doesnthehaveinternelvesforthis-day-5</module>
+		<module>probablyafirehazard-day-6</module>
 	</modules>
 	<dependencies>
 		<dependency>
