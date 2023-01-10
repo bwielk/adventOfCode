@@ -12,6 +12,8 @@
 		<module>utils</module>
 		<module>adventofcode-2015</module>
 		<module>adventofcode-2021</module>
+		<module>adventofcode-2022</module>
+		<module>day-1-caloriecounting</module>
 	</modules>
 	<dependencies>
 		<dependency>
