@@ -9,12 +9,8 @@
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<modules>
-		<module>day-1-notquitelisp</module>
 		<module>utils</module>
-		<module>day-2-iwastoldtherewouldbenomath</module>
-		<module>day-3-perfectlysphericalhousesinavacuum</module>
-		<module>day-5-doesnthehaveinternelvesforthis</module>
-		<module>day-6-probablyafirehazard</module>
+		<module>adventofcode-2015</module>
 	</modules>
 	<dependencies>
 		<dependency>
