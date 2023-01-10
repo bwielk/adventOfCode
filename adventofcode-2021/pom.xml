@@ -9,14 +9,19 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>adventofcode-2015</artifactId>
+	<artifactId>adventofcode-2021</artifactId>
 	<modules>
-		<module>day-1-notquitelisp</module>
-		<module>day-2-iwastoldtherewouldbenomath</module>
-		<module>day-3-perfectlysphericalhousesinavacuum</module>
-		<module>day-5-doesnthehaveinternelvesforthis</module>
-		<module>day-6-probablyafirehazard</module>
-		<module>day-9-allinasinglenight</module>
+		<module>day-01-sonarsweep</module>
+		<module>day-02-dive</module>
+		<module>day-04-giantsquid</module>
+		<module>day-05-hydrothermalvents</module>
+		<module>day-06-lanternfish</module>
+		<module>day-07-whale</module>
+		<module>day-08-segmentsearch</module>
+		<module>day-09-smokebasinsearch</module>
+		<module>day-10-syntaxscoring</module>
+		<module>day-11-dumbooctopus</module>
+		<module>helpers</module>
 	</modules>
 	<packaging>pom</packaging>
 
