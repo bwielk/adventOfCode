@@ -1,20 +1,44 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import lombok.NonNull;
 
 public class RockPaperScissors {
 
-	private List<RPSMoves> gameRound = new ArrayList<>();
+	private final Map<Integer, Integer> scores = new HashMap<>();
 
-	public List<RPSMoves> getGameRound() {
-		return gameRound;
+	public Map<Integer, Integer> getScores() {
+		return scores;
 	}
 
-	public List<RPSMoves> translateEntries( String entry ) {
-		List<RPSMoves> moves = new ArrayList<>();
+	public void runGames( String fileWithRounds ) {
+		List<String> entries = FileReaderHelper.readFileAsLinesOfStrings( RockPaperScissors.class,
+				fileWithRounds );
+		entries.forEach( round -> {
+			List<RoundMove> moves = translateRoundsToMoves( round );
+			List<RoundResult> roundResult = resolveRound( moves );
+			calculatePoints( roundResult );
+		} );
+	}
+
+	public Map<Integer, Integer> calculatePoints( List<RoundResult> results ) {
+		for ( RoundResult result : results ) {
+			if ( !scores.containsKey( result.getUserId() ) ) {
+				scores.put( result.getUserId(), 0 );
+			}
+			if ( result.getResult() != RPSResult.LOST ) {
+				int total = result.getResult().getPoint() + result.getResultsAchievedBy()
+						.getPoint();
+				scores.put( result.getUserId(), scores.get( result.getUserId() ) + total );
+			}
+		}
+		return scores;
+	}
+
+	public List<RoundMove> translateRoundsToMoves( String entry ) {
+		List<RoundMove> moves = new ArrayList<>();
 		List<String> cleansedEntry = Arrays.asList(
 				entry.strip().replaceAll( " ", "" ).split( "" ) );
 		if ( cleansedEntry.size() == 2 && cleansedEntry.get( 0 ).length() == 1 && cleansedEntry.get(
@@ -25,62 +49,67 @@ public class RockPaperScissors {
 			List<Character> player2AllowedParams = Arrays.stream( RPSMoves.values() )
 					.map( x -> Character.toUpperCase( x.getSchema().get( 1 ) ) )
 					.collect( Collectors.toList() );
-			char entryPlayer1 = Character.toUpperCase(cleansedEntry.get( 0 ).charAt( 0 ) );
-			char entryPlayer2 = Character.toUpperCase(cleansedEntry.get( 1 ).charAt( 0 ) );
-			if ( player1AllowedParams.contains( entryPlayer1 ) &&
-					player2AllowedParams.contains( entryPlayer2 )){
-				for(RPSMoves move : RPSMoves.values()){
-					if(move.getSchema().get( 0 ).equals( entryPlayer1 )){
-						moves.add( move );
+			char entryPlayer1 = Character.toUpperCase( cleansedEntry.get( 0 ).charAt( 0 ) );
+			char entryPlayer2 = Character.toUpperCase( cleansedEntry.get( 1 ).charAt( 0 ) );
+			if ( player1AllowedParams.contains( entryPlayer1 ) && player2AllowedParams.contains(
+					entryPlayer2 ) ) {
+				for ( RPSMoves move : RPSMoves.values() ) {
+					if ( move.getSchema().get( 0 ).equals( entryPlayer1 ) ) {
+						moves.add( new RoundMove(move, 0) );
 					}
-					if(move.getSchema().get( 1 ).equals( entryPlayer2 )){
-						moves.add( move);
+					if ( move.getSchema().get( 1 ).equals( entryPlayer2 ) ) {
+						moves.add( new RoundMove( move, 1 ) );
 					}
 				}
-			}else{
-				throw new IllegalStateException( String.format("The entry '%s' should only contain acceptable content", entry ));
+			} else {
+				throw new IllegalStateException(
+						String.format( "The entry '%s' should only contain acceptable content",
+								entry ) );
 			}
 		} else {
 			throw new IllegalStateException( "The entry should only contain two parameters" );
-		} return moves;
+		}
+		return moves;
 	}
 
-	public List<RPSResult> resolveRound( @NonNull final RPSMoves playerOneMove,
-			@NonNull final RPSMoves playerTwoMove ) {
-		List<RPSResult> results = new ArrayList<>();
-		gameRound.add( playerOneMove );
-		gameRound.add( playerTwoMove );
-		if ( gameRound.contains( RPSMoves.PAPER ) && gameRound.contains( RPSMoves.ROCK ) ) {
-			if ( gameRound.get( 0 ) == RPSMoves.PAPER ) {
-				results.add( RPSResult.WIN );
-				results.add( RPSResult.LOST );
-			} else {
-				results.add( RPSResult.LOST );
-				results.add( RPSResult.WIN );
-			}
-		} else if ( gameRound.contains( RPSMoves.ROCK ) && gameRound.contains(
-				RPSMoves.SCISSORS ) ) {
-			if ( gameRound.get( 0 ) == RPSMoves.ROCK ) {
-				results.add( RPSResult.WIN );
-				results.add( RPSResult.LOST );
-			} else {
-				results.add( RPSResult.LOST );
-				results.add( RPSResult.WIN );
-			}
-		} else if ( gameRound.contains( RPSMoves.SCISSORS ) && gameRound.contains(
-				RPSMoves.PAPER ) ) {
-			if ( gameRound.get( 0 ) == RPSMoves.SCISSORS ) {
-				results.add( RPSResult.WIN );
-				results.add( RPSResult.LOST );
-			} else {
-				results.add( RPSResult.LOST );
-				results.add( RPSResult.WIN );
-			}
-		} else if ( gameRound.get( 0 ) == gameRound.get( 1 ) ) {
-			results.add( RPSResult.DRAW );
-			results.add( RPSResult.DRAW );
+	public List<RoundResult> resolveRound( List<RoundMove> roundMoves ) {
+		List<RoundResult> results = new ArrayList<>();
+		List<RPSMoves> moves = roundMoves.stream()
+				.map( RoundMove::getRpsMoves )
+				.collect( Collectors.toList());
+		if ( moves.contains( RPSMoves.PAPER ) && moves.contains( RPSMoves.ROCK ) ) {
+			int winningUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.PAPER )
+					.findFirst().get().getUserId();
+			int losingUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.ROCK )
+					.findFirst().get().getUserId();
+			results.add( new RoundResult( winningUserId, RPSResult.WIN,
+					RPSMoves.PAPER ) );
+			results.add( new RoundResult( losingUserId, RPSResult.LOST,
+					RPSMoves.ROCK ) );
+		} else if ( moves.contains( RPSMoves.ROCK ) && moves.contains( RPSMoves.SCISSORS ) ) {
+			int winningUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.ROCK )
+					.findFirst().get().getUserId();
+			int losingUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.SCISSORS )
+					.findFirst().get().getUserId();
+			results.add( new RoundResult( winningUserId, RPSResult.WIN,
+					RPSMoves.ROCK ) );
+			results.add( new RoundResult(losingUserId, RPSResult.LOST,
+					RPSMoves.SCISSORS ) );
+		} else if ( moves.contains( RPSMoves.SCISSORS ) && moves.contains( RPSMoves.PAPER ) ) {
+			int winningUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.SCISSORS )
+					.findFirst().get().getUserId();
+			int losingUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.PAPER )
+					.findFirst().get().getUserId();
+			results.add( new RoundResult( winningUserId, RPSResult.WIN,
+					RPSMoves.SCISSORS ) );
+			results.add( new RoundResult( losingUserId, RPSResult.LOST,
+					RPSMoves.PAPER ) );
+		} else if ( moves.get( 0 ) == moves.get( 1 ) ) {
+			results.add( new RoundResult( roundMoves.get( 0 ).getUserId(), RPSResult.DRAW,
+					moves.get( 0 ) ) );
+			results.add( new RoundResult( roundMoves.get( 1 ).getUserId(), RPSResult.DRAW,
+					moves.get( 0 ) ) );
 		}
-		gameRound.clear();
 		return results;
 	}
 }
