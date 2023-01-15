@@ -28,10 +28,9 @@ public class RockPaperScissors {
 			if ( !scores.containsKey( result.getUserId() ) ) {
 				scores.put( result.getUserId(), 0 );
 			}
-			int total = result.getResult().getPoint() + result.getResultsAchievedBy()
-					.getPoint();
+			int total = result.getResult().getPoint() + result.getResultsAchievedBy().getPoint();
 			scores.put( result.getUserId(), scores.get( result.getUserId() ) + total );
-			}
+		}
 		return scores;
 	}
 
@@ -53,7 +52,7 @@ public class RockPaperScissors {
 					entryPlayer2 ) ) {
 				for ( RPSMoves move : RPSMoves.values() ) {
 					if ( move.getSchema().get( 0 ).equals( entryPlayer1 ) ) {
-						moves.add( new RoundMove(move, 0) );
+						moves.add( new RoundMove( move, 0 ) );
 					}
 					if ( move.getSchema().get( 1 ).equals( entryPlayer2 ) ) {
 						moves.add( new RoundMove( move, 1 ) );
@@ -74,34 +73,13 @@ public class RockPaperScissors {
 		List<RoundResult> results = new ArrayList<>();
 		List<RPSMoves> moves = roundMoves.stream()
 				.map( RoundMove::getRpsMoves )
-				.collect( Collectors.toList());
+				.collect( Collectors.toList() );
 		if ( moves.contains( RPSMoves.PAPER ) && moves.contains( RPSMoves.ROCK ) ) {
-			int winningUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.PAPER )
-					.findFirst().get().getUserId();
-			int losingUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.ROCK )
-					.findFirst().get().getUserId();
-			results.add( new RoundResult( winningUserId, RPSResult.WIN,
-					RPSMoves.PAPER ) );
-			results.add( new RoundResult( losingUserId, RPSResult.LOST,
-					RPSMoves.ROCK ) );
+			results = defineResult( roundMoves, RPSMoves.PAPER, RPSMoves.ROCK );
 		} else if ( moves.contains( RPSMoves.ROCK ) && moves.contains( RPSMoves.SCISSORS ) ) {
-			int winningUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.ROCK )
-					.findFirst().get().getUserId();
-			int losingUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.SCISSORS )
-					.findFirst().get().getUserId();
-			results.add( new RoundResult( winningUserId, RPSResult.WIN,
-					RPSMoves.ROCK ) );
-			results.add( new RoundResult(losingUserId, RPSResult.LOST,
-					RPSMoves.SCISSORS ) );
+			results = defineResult( roundMoves, RPSMoves.ROCK, RPSMoves.SCISSORS );
 		} else if ( moves.contains( RPSMoves.SCISSORS ) && moves.contains( RPSMoves.PAPER ) ) {
-			int winningUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.SCISSORS )
-					.findFirst().get().getUserId();
-			int losingUserId = roundMoves.stream().filter( x -> x.getRpsMoves() == RPSMoves.PAPER )
-					.findFirst().get().getUserId();
-			results.add( new RoundResult( winningUserId, RPSResult.WIN,
-					RPSMoves.SCISSORS ) );
-			results.add( new RoundResult( losingUserId, RPSResult.LOST,
-					RPSMoves.PAPER ) );
+			results = defineResult( roundMoves, RPSMoves.SCISSORS, RPSMoves.PAPER );
 		} else if ( moves.get( 0 ) == moves.get( 1 ) ) {
 			results.add( new RoundResult( roundMoves.get( 0 ).getUserId(), RPSResult.DRAW,
 					moves.get( 0 ) ) );
@@ -110,4 +88,23 @@ public class RockPaperScissors {
 		}
 		return results;
 	}
+
+	private List<RoundResult> defineResult( List<RoundMove> roundMoves, RPSMoves winningMove,
+			RPSMoves losingMove ) {
+		List<RoundResult> results = new ArrayList<>();
+		int winningUserId = roundMoves.stream()
+				.filter( x -> x.getRpsMoves() == winningMove )
+				.findFirst()
+				.get()
+				.getUserId();
+		int losingUserId = roundMoves.stream()
+				.filter( x -> x.getRpsMoves() == losingMove )
+				.findFirst()
+				.get()
+				.getUserId();
+		results.add( new RoundResult( winningUserId, RPSResult.WIN, winningMove ) );
+		results.add( new RoundResult( losingUserId, RPSResult.LOST, losingMove ) );
+		return results;
+	}
+
 }
