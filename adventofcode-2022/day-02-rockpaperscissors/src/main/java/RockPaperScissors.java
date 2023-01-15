@@ -28,12 +28,10 @@ public class RockPaperScissors {
 			if ( !scores.containsKey( result.getUserId() ) ) {
 				scores.put( result.getUserId(), 0 );
 			}
-			if ( result.getResult() != RPSResult.LOST ) {
-				int total = result.getResult().getPoint() + result.getResultsAchievedBy()
-						.getPoint();
-				scores.put( result.getUserId(), scores.get( result.getUserId() ) + total );
+			int total = result.getResult().getPoint() + result.getResultsAchievedBy()
+					.getPoint();
+			scores.put( result.getUserId(), scores.get( result.getUserId() ) + total );
 			}
-		}
 		return scores;
 	}
 

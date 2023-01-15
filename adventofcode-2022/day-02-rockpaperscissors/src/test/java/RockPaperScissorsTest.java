@@ -75,12 +75,12 @@ class RockPaperScissorsTest {
 
 	private static Stream<Arguments> calculatePoints() {
 		return Stream.of(
-				Arguments.of( List.of( new RoundResult( 0, RPSResult.LOST, RPSMoves.SCISSORS ),//0
+				Arguments.of( List.of( new RoundResult( 0, RPSResult.LOST, RPSMoves.SCISSORS ),//0+3
 						new RoundResult( 1, RPSResult.WIN, RPSMoves.ROCK )),//6+1
-						0, 7 ),
-				Arguments.of( List.of( new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),//0
+						3, 7 ),
+				Arguments.of( List.of( new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),//0+2
 						new RoundResult( 1, RPSResult.WIN, RPSMoves.SCISSORS )),//6+3
-						0, 9 ),
+						2, 9 ),
 				Arguments.of( List.of( new RoundResult( 0, RPSResult.DRAW, RPSMoves.PAPER ),//3+2
 						new RoundResult( 1, RPSResult.DRAW, RPSMoves.PAPER )),//3+2
 						5, 5 ));
@@ -202,6 +202,14 @@ class RockPaperScissorsTest {
 		rockPaperScissors.runGames( "correctlyformattedinput.txt" );
 		Map<Integer, Integer> scores = rockPaperScissors.getScores();
 		assertThat( scores.get( 0 ) ).isEqualTo( 30 );
-		assertThat( scores.get( 1 ) ).isEqualTo( 6 );
+		assertThat( scores.get( 1 ) ).isEqualTo( 12 );
+	}
+
+	@Test
+	public void parsingOfFileGeneratesScoresTheActualInput() {
+		rockPaperScissors.runGames( "input.txt" );
+		Map<Integer, Integer> scores = rockPaperScissors.getScores();
+		assertThat( scores.get( 0 ) ).isEqualTo( 16114 );
+		assertThat( scores.get( 1 ) ).isEqualTo( 9241 );
 	}
 }
