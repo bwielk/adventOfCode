@@ -120,15 +120,15 @@ public class RockPaperScissors {
 			switch(move) {
 			case SCISSORS:
 				if ( result == RPSResult.WIN ) {
-					winningMove = RPSMoves.SCISSORS;
-					winningUserId = 1;
-					losingUserId = 0;
-					losingMove = RPSMoves.PAPER;
-				} else if ( result == RPSResult.LOST ) {
 					winningMove = RPSMoves.ROCK;
 					losingMove = RPSMoves.SCISSORS;
 					winningUserId = 0;
 					losingUserId = 1;
+				} else if ( result == RPSResult.LOST ) {
+					winningMove = RPSMoves.SCISSORS;
+					losingMove = RPSMoves.PAPER;
+					winningUserId = 1;
+					losingUserId = 0;
 				}
 				break;
 			case ROCK:

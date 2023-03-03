@@ -57,14 +57,50 @@ class RockPaperScissorsTest {
 				new RoundMove( RPSMoves.SCISSORS, 1 ),
 				new RoundResult( 1, RPSResult.LOST, RPSMoves.SCISSORS ),
 				new RoundResult( 0, RPSResult.WIN, RPSMoves.ROCK ) ),
+
 				Arguments.of( new RoundMove( RPSResult.DRAW, 0 ),
 						new RoundMove( RPSMoves.SCISSORS, 1 ),
-						new RoundResult( 0, RPSResult.DRAW, RPSMoves.SCISSORS ),
-						new RoundResult( 1, RPSResult.DRAW, RPSMoves.SCISSORS )),
+						new RoundResult( 1, RPSResult.DRAW, RPSMoves.SCISSORS ),
+						new RoundResult( 0, RPSResult.DRAW, RPSMoves.SCISSORS )),
+
 				Arguments.of( new RoundMove( RPSResult.LOST, 0 ),
 						new RoundMove( RPSMoves.SCISSORS, 1 ),
 				new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),
 				new RoundResult( 1, RPSResult.WIN, RPSMoves.SCISSORS )));
+	}
+
+	private static Stream<Arguments> paperAndGameResult() {
+		return Stream.of( Arguments.of( new RoundMove( RPSResult.WIN, 0 ),
+				new RoundMove( RPSMoves.SCISSORS, 1 ),
+				new RoundResult( 1, RPSResult.LOST, RPSMoves.SCISSORS ),
+				new RoundResult( 0, RPSResult.WIN, RPSMoves.ROCK ) ),
+
+				Arguments.of( new RoundMove( RPSResult.DRAW, 0 ),
+						new RoundMove( RPSMoves.SCISSORS, 1 ),
+						new RoundResult( 1, RPSResult.DRAW, RPSMoves.SCISSORS ),
+						new RoundResult( 0, RPSResult.DRAW, RPSMoves.SCISSORS )),
+
+				Arguments.of( new RoundMove( RPSResult.LOST, 0 ),
+						new RoundMove( RPSMoves.SCISSORS, 1 ),
+						new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),
+						new RoundResult( 1, RPSResult.WIN, RPSMoves.SCISSORS )));
+	}
+
+	private static Stream<Arguments> rockAndGameResult() {
+		return Stream.of( Arguments.of( new RoundMove( RPSResult.WIN, 0 ),
+				new RoundMove( RPSMoves.SCISSORS, 1 ),
+				new RoundResult( 1, RPSResult.LOST, RPSMoves.SCISSORS ),
+				new RoundResult( 0, RPSResult.WIN, RPSMoves.ROCK ) ),
+
+				Arguments.of( new RoundMove( RPSResult.DRAW, 0 ),
+						new RoundMove( RPSMoves.SCISSORS, 1 ),
+						new RoundResult( 1, RPSResult.DRAW, RPSMoves.SCISSORS ),
+						new RoundResult( 0, RPSResult.DRAW, RPSMoves.SCISSORS )),
+
+				Arguments.of( new RoundMove( RPSResult.LOST, 0 ),
+						new RoundMove( RPSMoves.SCISSORS, 1 ),
+						new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),
+						new RoundResult( 1, RPSResult.WIN, RPSMoves.SCISSORS )));
 	}
 
 	private static Stream<Arguments> correctlyFormattedEntries() {
@@ -188,8 +224,8 @@ class RockPaperScissorsTest {
 			RoundResult expectedRoundResult1, RoundResult expectedRoundResult2){
 		List<RoundResult> resultList = rockPaperScissors.resolveRoundBasedOnProvidedResult( List.of( move1, move2 ) );
 		assertThat( resultList ).hasSize( 2 );
-		RoundResult roundResult1 = resultList.get( 0 );
-		RoundResult roundResult2 = resultList.get( 1 );
+		RoundResult roundResult1 = resultList.get( 1 );
+		RoundResult roundResult2 = resultList.get( 0 );
 
 		assertThat( roundResult1.getResult() ).isEqualTo( expectedRoundResult1.getResult() );
 		assertThat( roundResult1.getResultsAchievedBy() ).isEqualTo(
