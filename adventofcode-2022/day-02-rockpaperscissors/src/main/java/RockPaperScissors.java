@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class RockPaperScissors {
@@ -13,11 +14,11 @@ public class RockPaperScissors {
 		return scores;
 	}
 
-	public void runGames( String fileWithRounds ) {
+	public void runGames( String fileWithRounds, boolean opponentMoveAndResultProvided ) {
 		List<String> entries = FileReaderHelper.readFileAsLinesOfStrings( RockPaperScissors.class,
 				fileWithRounds );
 		entries.forEach( round -> {
-			List<RoundMove> moves = translateRoundsToMoves( round );
+			List<RoundMove> moves = translateRoundsToMoves( round, opponentMoveAndResultProvided );
 			List<RoundResult> roundResult = resolveRound( moves );
 			calculatePoints( roundResult );
 		} );
@@ -34,7 +35,8 @@ public class RockPaperScissors {
 		return scores;
 	}
 
-	public List<RoundMove> translateRoundsToMoves( String entry ) {
+	public List<RoundMove> translateRoundsToMoves( String entry,
+			boolean opponentMoveAndResultProvided ) {
 		List<RoundMove> moves = new ArrayList<>();
 		List<String> cleansedEntry = Arrays.asList(
 				entry.strip().replaceAll( " ", "" ).split( "" ) );
@@ -46,16 +48,29 @@ public class RockPaperScissors {
 			List<Character> player2AllowedParams = Arrays.stream( RPSMoves.values() )
 					.map( x -> Character.toUpperCase( x.getSchema().get( 1 ) ) )
 					.collect( Collectors.toList() );
-			char entryPlayer1 = Character.toUpperCase( cleansedEntry.get( 0 ).charAt( 0 ) );
-			char entryPlayer2 = Character.toUpperCase( cleansedEntry.get( 1 ).charAt( 0 ) );
-			if ( player1AllowedParams.contains( entryPlayer1 ) && player2AllowedParams.contains(
-					entryPlayer2 ) ) {
-				for ( RPSMoves move : RPSMoves.values() ) {
-					if ( move.getSchema().get( 0 ).equals( entryPlayer1 ) ) {
-						moves.add( new RoundMove( move, 0 ) );
+			char firstInput = Character.toUpperCase( cleansedEntry.get( 0 ).charAt( 0 ) );
+			char secondInput = Character.toUpperCase( cleansedEntry.get( 1 ).charAt( 0 ) );
+			if ( player1AllowedParams.contains( firstInput ) && player2AllowedParams.contains(
+					secondInput ) ) {
+				if ( opponentMoveAndResultProvided ) {
+					for ( RPSResult result : RPSResult.values() ) {
+						if ( result.getResultCode().equals( secondInput ) ) {
+							moves.add( new RoundMove( result, 0 ) );
+						}
 					}
-					if ( move.getSchema().get( 1 ).equals( entryPlayer2 ) ) {
-						moves.add( new RoundMove( move, 1 ) );
+					for ( RPSMoves move : RPSMoves.values() ) {
+						if ( move.getSchema().get( 0 ).equals( firstInput ) ) {
+							moves.add( new RoundMove( move, 1 ) );
+						}
+					}
+				} else {
+					for ( RPSMoves move : RPSMoves.values() ) {
+						if ( move.getSchema().get( 0 ).equals( firstInput ) ) {
+							moves.add( new RoundMove( move, 0 ) );
+						}
+						if ( move.getSchema().get( 1 ).equals( secondInput ) ) {
+							moves.add( new RoundMove( move, 1 ) );
+						}
 					}
 				}
 			} else {
@@ -85,6 +100,61 @@ public class RockPaperScissors {
 					moves.get( 0 ) ) );
 			results.add( new RoundResult( roundMoves.get( 1 ).getUserId(), RPSResult.DRAW,
 					moves.get( 0 ) ) );
+		}
+		return results;
+	}
+
+	public List<RoundResult> resolveRoundBasedOnProvidedResult( List<RoundMove> roundMoves ) {
+		List<RoundResult> results = new ArrayList<>();
+		RPSMoves move = roundMoves.stream()
+				.map( RoundMove::getRpsMoves )
+				.filter( Objects::nonNull ).findFirst().get();
+		RPSResult result = roundMoves.stream()
+				.map( RoundMove::getProvidedResult )
+				.filter( Objects::nonNull ).findFirst().get();
+		int winningUserId = 0;
+		int losingUserId = 0;
+		RPSMoves winningMove = null;
+		RPSMoves losingMove = null;
+		if(result != RPSResult.DRAW){
+			switch(move) {
+			case SCISSORS:
+				if ( result == RPSResult.WIN ) {
+					winningMove = RPSMoves.SCISSORS;
+					winningUserId = 1;
+					losingUserId = 0;
+					losingMove = RPSMoves.PAPER;
+				} else if ( result == RPSResult.LOST ) {
+					winningMove = RPSMoves.ROCK;
+					losingMove = RPSMoves.SCISSORS;
+					winningUserId = 0;
+					losingUserId = 1;
+				}
+				break;
+			case ROCK:
+				if ( result == RPSResult.WIN ) {
+					winningMove = RPSMoves.ROCK;
+					losingMove = RPSMoves.SCISSORS;
+				} else if ( result == RPSResult.LOST ) {
+					winningMove = RPSMoves.SCISSORS;
+					losingMove = RPSMoves.ROCK;
+				}
+				break;
+			case PAPER:
+				if ( result == RPSResult.WIN ) {
+				} else if ( result == RPSResult.LOST ) {
+				}
+				break;
+			default:
+				break;
+			}
+			results.add( new RoundResult( winningUserId, RPSResult.WIN, winningMove ) );
+			results.add( new RoundResult( losingUserId, RPSResult.LOST, losingMove ) );
+		}else{
+			results.add( new RoundResult( roundMoves.get( 0 ).getUserId(), RPSResult.DRAW,
+					move ));
+			results.add( new RoundResult( roundMoves.get( 1 ).getUserId(), RPSResult.DRAW,
+					move ));
 		}
 		return results;
 	}
