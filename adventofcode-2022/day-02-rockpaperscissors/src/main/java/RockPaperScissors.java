@@ -19,8 +19,14 @@ public class RockPaperScissors {
 				fileWithRounds );
 		entries.forEach( round -> {
 			List<RoundMove> moves = translateRoundsToMoves( round, opponentMoveAndResultProvided );
-			List<RoundResult> roundResult = resolveRound( moves );
+			List<RoundResult> roundResult=null;
+			if(opponentMoveAndResultProvided){
+				roundResult = resolveRoundBasedOnProvidedResult( moves );
+			}else {
+				roundResult = resolveRound( moves );
+			}
 			calculatePoints( roundResult );
+			System.out.println(scores);
 		} );
 	}
 

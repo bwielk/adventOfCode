@@ -119,13 +119,13 @@ class RockPaperScissorsTest {
 	private static Stream<Arguments> correctlyFormattedEntriesWithProvidedResultAndOpponentMove() {
 		return Stream.of( Arguments.of( "C Z", new RoundMove( RPSResult.WIN, 0 ),
 				new RoundMove( RPSMoves.SCISSORS, 1 ) ),
-				Arguments.of( "C Y", new RoundMove( RPSResult.LOST, 0 ),
+				Arguments.of( "C Y", new RoundMove( RPSResult.DRAW, 0 ),
 						new RoundMove( RPSMoves.SCISSORS, 1 ) ),
-				Arguments.of( "c y", new RoundMove( RPSResult.LOST, 0 ),
+				Arguments.of( "c y", new RoundMove( RPSResult.DRAW, 0 ),
 						new RoundMove( RPSMoves.SCISSORS, 1 ) ),
 				Arguments.of( "   A Z   ", new RoundMove( RPSResult.WIN, 0 ),
 						new RoundMove( RPSMoves.ROCK, 1 ) ),
-				Arguments.of( "AZ", new RoundMove( RPSResult.WIN, 0 ),
+				Arguments.of( "AX", new RoundMove( RPSResult.LOST, 0 ),
 						new RoundMove( RPSMoves.ROCK, 1 ) ) );
 	}
 
@@ -140,6 +140,19 @@ class RockPaperScissorsTest {
 				Arguments.of( List.of( new RoundResult( 0, RPSResult.DRAW, RPSMoves.PAPER ),//3+2
 						new RoundResult( 1, RPSResult.DRAW, RPSMoves.PAPER ) ),//3+2
 						5, 5 ) );
+	}
+
+	private static Stream<Arguments> calculatePointsBasedOnExpectedResultAndOpponentAction() {
+		return Stream.of(
+				Arguments.of( List.of( new RoundMove( RPSMoves.ROCK, 1 ),
+						new RoundMove( RPSResult.DRAW, 0 ) ),//3+1
+						4 ),
+				Arguments.of( List.of( new RoundMove( RPSMoves.PAPER, 1 ),
+						new RoundMove( RPSResult.LOST, 0) ),//1
+						1 ),
+				Arguments.of( List.of( new RoundMove( RPSMoves.SCISSORS, 1 ),
+						new RoundMove( RPSResult.WIN, 0 ) ),//1+6
+						7 ) );
 	}
 
 	//TODO handle skipping invalid entries
@@ -327,12 +340,14 @@ class RockPaperScissorsTest {
 		assertThat( totals.get( results.get( 1 ).getUserId() ) ).isEqualTo( result2Total );
 	}
 
-	//	@Test
-	//	public void definesPlayerMoveBasedOnOpponentMoveAndResult(){
-	//		Map<Integer, Integer> totals = rockPaperScissors.calculatePoints( results );
-	//		assertThat( totals.get( results.get( 0 ).getUserId() ) ).isEqualTo( result1Total );
-	//		assertThat( totals.get( results.get( 1 ).getUserId() ) ).isEqualTo( result2Total );
-	//	}
+	@ParameterizedTest
+	@MethodSource("calculatePointsBasedOnExpectedResultAndOpponentAction")
+	public void calculatesPointsFromResultsBasedOnExpectedResultAndProvidedOpponentAction
+			( List<RoundMove> moves, int result ) {
+		List<RoundResult> results = rockPaperScissors.resolveRoundBasedOnProvidedResult( moves );
+		Map<Integer, Integer> totals = rockPaperScissors.calculatePoints( results );
+		assertThat( totals.get( 0 )).isEqualTo( result );
+	}
 
 	@Test
 	public void definesPlayersMoveBasedOnOutcomeAndOpponentMove() {
@@ -356,5 +371,25 @@ class RockPaperScissorsTest {
 		Map<Integer, Integer> scores = rockPaperScissors.getScores();
 		assertThat( scores.get( 0 ) ).isEqualTo( 16114 );
 		assertThat( scores.get( 1 ) ).isEqualTo( 9241 );
+	}
+
+	@Test
+	public void parsingOfFileGeneratesScoresWithOpponentsMovesAndExpectedWin() {
+		rockPaperScissors.runGames( "correctlyformattedinput.txt", true );
+		Map<Integer, Integer> scores = rockPaperScissors.getScores();
+		//C Z (win) -A 6 + 1
+		//C Y (draw) -C 3 + 3
+		//B X (lose) -C 0 + 1
+		//A Z (win) -B 6 + 2
+		// == 22
+		assertThat( scores.get( 0 ) ).isEqualTo( 22 );
+	}
+
+	@Test
+	public void parsingOfFileGeneratesScoresWithOpponentsMovesAndExpectedWinTheActualInput() {
+		rockPaperScissors.runGames( "input.txt", true );
+		Map<Integer, Integer> scores = rockPaperScissors.getScores();
+		assertThat( scores.get( 0 )).isEqualTo( 14610 );
+		assertThat( scores.get( 1 )).isEqualTo( 9403 );
 	}
 }
