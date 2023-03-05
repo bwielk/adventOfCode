@@ -71,36 +71,36 @@ class RockPaperScissorsTest {
 
 	private static Stream<Arguments> paperAndGameResult() {
 		return Stream.of( Arguments.of( new RoundMove( RPSResult.WIN, 0 ),
-				new RoundMove( RPSMoves.SCISSORS, 1 ),
-				new RoundResult( 1, RPSResult.LOST, RPSMoves.SCISSORS ),
-				new RoundResult( 0, RPSResult.WIN, RPSMoves.ROCK ) ),
+				new RoundMove( RPSMoves.PAPER, 1 ),
+				new RoundResult( 1, RPSResult.LOST, RPSMoves.PAPER ),
+				new RoundResult( 0, RPSResult.WIN, RPSMoves.SCISSORS ) ),
 
 				Arguments.of( new RoundMove( RPSResult.DRAW, 0 ),
-						new RoundMove( RPSMoves.SCISSORS, 1 ),
-						new RoundResult( 1, RPSResult.DRAW, RPSMoves.SCISSORS ),
-						new RoundResult( 0, RPSResult.DRAW, RPSMoves.SCISSORS )),
+						new RoundMove( RPSMoves.PAPER, 1 ),
+						new RoundResult( 1, RPSResult.DRAW, RPSMoves.PAPER ),
+						new RoundResult( 0, RPSResult.DRAW, RPSMoves.PAPER )),
 
 				Arguments.of( new RoundMove( RPSResult.LOST, 0 ),
-						new RoundMove( RPSMoves.SCISSORS, 1 ),
-						new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),
-						new RoundResult( 1, RPSResult.WIN, RPSMoves.SCISSORS )));
+						new RoundMove( RPSMoves.PAPER, 1 ),
+						new RoundResult( 0, RPSResult.LOST, RPSMoves.ROCK ),
+						new RoundResult( 1, RPSResult.WIN, RPSMoves.PAPER )));
 	}
 
 	private static Stream<Arguments> rockAndGameResult() {
 		return Stream.of( Arguments.of( new RoundMove( RPSResult.WIN, 0 ),
-				new RoundMove( RPSMoves.SCISSORS, 1 ),
-				new RoundResult( 1, RPSResult.LOST, RPSMoves.SCISSORS ),
-				new RoundResult( 0, RPSResult.WIN, RPSMoves.ROCK ) ),
+				new RoundMove( RPSMoves.ROCK, 1 ),
+				new RoundResult( 1, RPSResult.LOST, RPSMoves.ROCK ),
+				new RoundResult( 0, RPSResult.WIN, RPSMoves.PAPER ) ),
 
 				Arguments.of( new RoundMove( RPSResult.DRAW, 0 ),
-						new RoundMove( RPSMoves.SCISSORS, 1 ),
-						new RoundResult( 1, RPSResult.DRAW, RPSMoves.SCISSORS ),
-						new RoundResult( 0, RPSResult.DRAW, RPSMoves.SCISSORS )),
+						new RoundMove( RPSMoves.ROCK, 1 ),
+						new RoundResult( 1, RPSResult.DRAW, RPSMoves.ROCK ),
+						new RoundResult( 0, RPSResult.DRAW, RPSMoves.ROCK )),
 
 				Arguments.of( new RoundMove( RPSResult.LOST, 0 ),
-						new RoundMove( RPSMoves.SCISSORS, 1 ),
-						new RoundResult( 0, RPSResult.LOST, RPSMoves.PAPER ),
-						new RoundResult( 1, RPSResult.WIN, RPSMoves.SCISSORS )));
+						new RoundMove( RPSMoves.ROCK, 1 ),
+						new RoundResult( 0, RPSResult.LOST, RPSMoves.SCISSORS ),
+						new RoundResult( 1, RPSResult.WIN, RPSMoves.ROCK )));
 	}
 
 	private static Stream<Arguments> correctlyFormattedEntries() {
@@ -114,15 +114,6 @@ class RockPaperScissorsTest {
 						new RoundMove( RPSMoves.SCISSORS, 1 ) ),
 				Arguments.of( "AZ", new RoundMove( RPSMoves.ROCK, 0 ),
 						new RoundMove( RPSMoves.SCISSORS, 1 ) ) );
-	}
-
-	private static Stream<Arguments> correctlyFormattedEntriesAlternativeCalculation() {
-		return Stream.of( Arguments.of( "A Y", new RoundMove( RPSMoves.SCISSORS, 0 ),
-				new RoundMove( RPSMoves.SCISSORS, 1 ) ),
-				Arguments.of( "B X", new RoundMove( RPSMoves.PAPER, 0 ),
-						new RoundMove( RPSMoves.ROCK, 1 ) ),
-				Arguments.of( "C Z", new RoundMove( RPSMoves.SCISSORS, 0 ),
-						new RoundMove( RPSMoves.ROCK, 1 ) ) );
 	}
 
 	private static Stream<Arguments> correctlyFormattedEntriesWithProvidedResultAndOpponentMove() {
@@ -221,6 +212,46 @@ class RockPaperScissorsTest {
 	@ParameterizedTest
 	@MethodSource("scissorsAndGameResult")
 	public void scissorsAreCorrectlyChallengedWithMovesBasedOnGameResult(RoundMove move1, RoundMove move2,
+			RoundResult expectedRoundResult1, RoundResult expectedRoundResult2){
+		List<RoundResult> resultList = rockPaperScissors.resolveRoundBasedOnProvidedResult( List.of( move1, move2 ) );
+		assertThat( resultList ).hasSize( 2 );
+		RoundResult roundResult1 = resultList.get( 1 );
+		RoundResult roundResult2 = resultList.get( 0 );
+
+		assertThat( roundResult1.getResult() ).isEqualTo( expectedRoundResult1.getResult() );
+		assertThat( roundResult1.getResultsAchievedBy() ).isEqualTo(
+				expectedRoundResult1.getResultsAchievedBy() );
+		assertThat( roundResult1.getUserId() ).isEqualTo( expectedRoundResult1.getUserId() );
+
+		assertThat( roundResult2.getResult() ).isEqualTo( expectedRoundResult2.getResult() );
+		assertThat( roundResult2.getResultsAchievedBy() ).isEqualTo(
+				expectedRoundResult2.getResultsAchievedBy() );
+		assertThat( roundResult2.getUserId() ).isEqualTo( expectedRoundResult2.getUserId() );
+	}
+
+	@ParameterizedTest
+	@MethodSource("paperAndGameResult")
+	public void papersAreCorrectlyChallengedWithMovesBasedOnGameResult(RoundMove move1, RoundMove move2,
+			RoundResult expectedRoundResult1, RoundResult expectedRoundResult2){
+		List<RoundResult> resultList = rockPaperScissors.resolveRoundBasedOnProvidedResult( List.of( move1, move2 ) );
+		assertThat( resultList ).hasSize( 2 );
+		RoundResult roundResult1 = resultList.get( 1 );
+		RoundResult roundResult2 = resultList.get( 0 );
+
+		assertThat( roundResult1.getResult() ).isEqualTo( expectedRoundResult1.getResult() );
+		assertThat( roundResult1.getResultsAchievedBy() ).isEqualTo(
+				expectedRoundResult1.getResultsAchievedBy() );
+		assertThat( roundResult1.getUserId() ).isEqualTo( expectedRoundResult1.getUserId() );
+
+		assertThat( roundResult2.getResult() ).isEqualTo( expectedRoundResult2.getResult() );
+		assertThat( roundResult2.getResultsAchievedBy() ).isEqualTo(
+				expectedRoundResult2.getResultsAchievedBy() );
+		assertThat( roundResult2.getUserId() ).isEqualTo( expectedRoundResult2.getUserId() );
+	}
+
+	@ParameterizedTest
+	@MethodSource("rockAndGameResult")
+	public void rocksAreCorrectlyChallengedWithMovesBasedOnGameResult(RoundMove move1, RoundMove move2,
 			RoundResult expectedRoundResult1, RoundResult expectedRoundResult2){
 		List<RoundResult> resultList = rockPaperScissors.resolveRoundBasedOnProvidedResult( List.of( move1, move2 ) );
 		assertThat( resultList ).hasSize( 2 );

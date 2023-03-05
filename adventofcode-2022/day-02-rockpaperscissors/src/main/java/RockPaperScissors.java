@@ -117,7 +117,8 @@ public class RockPaperScissors {
 		RPSMoves winningMove = null;
 		RPSMoves losingMove = null;
 		if(result != RPSResult.DRAW){
-			switch(move) {
+			switch(move) { // move of an opponent; we're calculating what we should do in order
+				// to accomplish a result of our interest
 			case SCISSORS:
 				if ( result == RPSResult.WIN ) {
 					winningMove = RPSMoves.ROCK;
@@ -133,18 +134,30 @@ public class RockPaperScissors {
 				break;
 			case ROCK:
 				if ( result == RPSResult.WIN ) {
+					winningMove = RPSMoves.PAPER;
+					losingMove = RPSMoves.ROCK;
+					winningUserId = 0;
+					losingUserId = 1;
+				} else if ( result == RPSResult.LOST ) {
 					winningMove = RPSMoves.ROCK;
 					losingMove = RPSMoves.SCISSORS;
-				} else if ( result == RPSResult.LOST ) {
-					winningMove = RPSMoves.SCISSORS;
-					losingMove = RPSMoves.ROCK;
+					winningUserId = 1;
+					losingUserId = 0;
 				}
 				break;
 			case PAPER:
 				if ( result == RPSResult.WIN ) {
+					winningMove = RPSMoves.SCISSORS;
+					losingMove = RPSMoves.PAPER;
+					winningUserId = 0;
+					losingUserId = 1;
 				} else if ( result == RPSResult.LOST ) {
+					winningMove = RPSMoves.PAPER;
+					losingMove = RPSMoves.ROCK;
+					winningUserId = 1;
+					losingUserId = 0;
+					break;
 				}
-				break;
 			default:
 				break;
 			}
