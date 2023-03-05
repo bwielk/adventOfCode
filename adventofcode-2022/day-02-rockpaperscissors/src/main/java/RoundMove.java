@@ -20,10 +20,6 @@ public class RoundMove {
 		return userId;
 	}
 
-	public void setRpsMoves( final RPSMoves rpsMoves ) {
-		this.rpsMoves = rpsMoves;
-	}
-
 	public RPSMoves getRpsMoves() {
 		return rpsMoves;
 	}

@@ -26,7 +26,6 @@ public class RockPaperScissors {
 				roundResult = resolveRound( moves );
 			}
 			calculatePoints( roundResult );
-			System.out.println(scores);
 		} );
 	}
 

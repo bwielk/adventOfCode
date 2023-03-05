@@ -3,19 +3,21 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>adventofcode</artifactId>
+		<artifactId>adventofcode-2022</artifactId>
 		<groupId>org.example</groupId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>adventofcode-2022</artifactId>
-	<packaging>pom</packaging>
-	<modules>
-		<module>day-01-caloriecounting</module>
-		<module>day-02-rockpaperscissors</module>
-		<module>day-03-rucksackreorganisation</module>
-	</modules>
+	<artifactId>day-03-rucksackreorganisation</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>org.example</groupId>
+			<artifactId>utils</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
 
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
