@@ -8,8 +8,7 @@ import java.util.List;
 
 public class FileReaderHelper {
 
-	public static List<String> readFileAsLinesOfStrings( Class clazz,
-			String filePath ) {
+	public static List<String> readFileAsLinesOfStrings( Class clazz, String filePath ) {
 		List<String> lines = new ArrayList<>();
 		InputStream is = clazz.getClassLoader().getResourceAsStream( filePath );
 		try ( InputStreamReader streamReader = new InputStreamReader( is, StandardCharsets.UTF_8 );

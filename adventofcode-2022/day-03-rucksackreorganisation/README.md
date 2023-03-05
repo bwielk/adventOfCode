@@ -1,4 +1,4 @@
-# Day 2:Rock Paper Scissors
+# Day 3:Rucksack reorganisation
 
 ### --- Part One ---
 

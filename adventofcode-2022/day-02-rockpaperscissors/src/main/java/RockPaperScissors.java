@@ -19,10 +19,10 @@ public class RockPaperScissors {
 				fileWithRounds );
 		entries.forEach( round -> {
 			List<RoundMove> moves = translateRoundsToMoves( round, opponentMoveAndResultProvided );
-			List<RoundResult> roundResult=null;
-			if(opponentMoveAndResultProvided){
+			List<RoundResult> roundResult = null;
+			if ( opponentMoveAndResultProvided ) {
 				roundResult = resolveRoundBasedOnProvidedResult( moves );
-			}else {
+			} else {
 				roundResult = resolveRound( moves );
 			}
 			calculatePoints( roundResult );
@@ -113,17 +113,21 @@ public class RockPaperScissors {
 		List<RoundResult> results = new ArrayList<>();
 		RPSMoves move = roundMoves.stream()
 				.map( RoundMove::getRpsMoves )
-				.filter( Objects::nonNull ).findFirst().get();
+				.filter( Objects::nonNull )
+				.findFirst()
+				.get();
 		RPSResult result = roundMoves.stream()
 				.map( RoundMove::getProvidedResult )
-				.filter( Objects::nonNull ).findFirst().get();
+				.filter( Objects::nonNull )
+				.findFirst()
+				.get();
 		int winningUserId = 0;
 		int losingUserId = 0;
 		RPSMoves winningMove = null;
 		RPSMoves losingMove = null;
-		if(result != RPSResult.DRAW){
-			switch(move) { // move of an opponent; we're calculating what we should do in order
-				// to accomplish a result of our interest
+		if ( result != RPSResult.DRAW ) {
+			switch ( move ) { // move of an opponent; we're calculating what we should do in order
+			// to accomplish a result of our interest
 			case SCISSORS:
 				if ( result == RPSResult.WIN ) {
 					winningMove = RPSMoves.ROCK;
@@ -168,11 +172,9 @@ public class RockPaperScissors {
 			}
 			results.add( new RoundResult( winningUserId, RPSResult.WIN, winningMove ) );
 			results.add( new RoundResult( losingUserId, RPSResult.LOST, losingMove ) );
-		}else{
-			results.add( new RoundResult( roundMoves.get( 0 ).getUserId(), RPSResult.DRAW,
-					move ));
-			results.add( new RoundResult( roundMoves.get( 1 ).getUserId(), RPSResult.DRAW,
-					move ));
+		} else {
+			results.add( new RoundResult( roundMoves.get( 0 ).getUserId(), RPSResult.DRAW, move ) );
+			results.add( new RoundResult( roundMoves.get( 1 ).getUserId(), RPSResult.DRAW, move ) );
 		}
 		return results;
 	}
