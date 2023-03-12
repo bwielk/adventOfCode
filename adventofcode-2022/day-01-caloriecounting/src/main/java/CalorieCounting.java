@@ -30,18 +30,20 @@ public class CalorieCounting {
 		return intake.get( intake.size() - 1 );
 	}
 
-	private List<Integer> createListOfElfCalorieIntake( String fileName ) {
+	public List<Integer> createListOfElfCalorieIntake( String fileName ) {
 		List<String> inputs = FileReaderHelper.readFileAsLinesOfStrings( CalorieCounting.class,
 				fileName );
 		List<Integer> records = new ArrayList<>();
-		Integer caloriesSumRecorder = 0;
-		for ( String line : inputs ) {
-			String clearedLine = line.strip();
-			if ( clearedLine.isEmpty() ) {
+		int caloriesSumRecorder = 0;
+		for ( int i = 0; i<inputs.size(); i++) {
+			String clearedLine = inputs.get( i ).strip();
+			if ( clearedLine.isEmpty() && ( i<inputs.size() && !inputs.get( i+1 ).isEmpty() )) {
 				records.add( caloriesSumRecorder );
 				caloriesSumRecorder = 0;
 			} else {
-				caloriesSumRecorder += Integer.parseInt( line );
+				if(!clearedLine.isEmpty()){
+					caloriesSumRecorder += Integer.parseInt( clearedLine );
+				}
 			}
 		}
 		return records;
