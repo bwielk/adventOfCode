@@ -25,22 +25,25 @@ public class RucksackReorganisation {
 
 	public int checkCommonCharsInChunksOfUpToThreeGroups( List<String> entries ) {
 		int total = 0;
-		if(entries.size() >= 3 && entries.size()%3 == 0){
+		if ( entries.size() >= 3 && entries.size() % 3 == 0 ) {
 			for ( int i = 0; i < entries.size(); i++ ) {
 				List<String> group;
 				if ( entries.size() > 1 ) {
 					group = entries.subList( i, i + 3 );
-					List<Character> identifiedCharacters = findCommonCharacterInASeriesOfEntries( group );
+					List<Character> identifiedCharacters = findCommonCharacterInASeriesOfEntries(
+							group );
 					total += calculatePointsForSharedCharacters( identifiedCharacters );
-					i+=2;
+					i += 2;
 				} else {
 					group = entries.subList( i, entries.size() );
-					List<Character> identifiedCharacters = findCommonCharacterInASeriesOfEntries( group );
+					List<Character> identifiedCharacters = findCommonCharacterInASeriesOfEntries(
+							group );
 					total += calculatePointsForSharedCharacters( identifiedCharacters );
 				}
 			}
-		}else{
-			throw new IllegalArgumentException("The amount of entries must be greater than 3 and be dividable by 3");
+		} else {
+			throw new IllegalArgumentException(
+					"The amount of entries must be greater than 3 and be dividable by 3" );
 		}
 		return total;
 	}
@@ -89,8 +92,9 @@ public class RucksackReorganisation {
 	public List<Character> findCommonCharacterInASeriesOfEntries( List<String> entries ) {
 		Map<Character, Integer> tracker = new HashMap<>();
 		List<Character> results = new ArrayList<>();
-		List<String> sanitisedEntries = entries.stream().map( StringHelper::removeDuplicateChars ).collect(
-				Collectors.toList());
+		List<String> sanitisedEntries = entries.stream()
+				.map( StringHelper::removeDuplicateChars )
+				.collect( Collectors.toList() );
 		if ( sanitisedEntries.size() > 1 ) {
 			for ( String entry : sanitisedEntries ) {//go through the list of strings
 				for ( int i = 0; i < entry.length(); i++ ) {//go through characters of the current string
