@@ -4,19 +4,30 @@ import java.util.List;
 
 public class CalorieCounting {
 
-	public Integer findHighestCalorieIntake( String fileName ) {
-		List<Integer> records = createListOfElfCalorieIntake( fileName );
-		Collections.sort( records );
-		return records.get( records.size() - 1 );
+	public Integer runFindHighestCalorieIntake( String fileName ) {
+		List<Integer> intake = createListOfElfCalorieIntake( fileName );
+		return findHighestCalorieIntake( intake );
 	}
 
-	public Integer findHighestCalorieIntakeForTopThreeElves( String fileName ) {
-		List<Integer> records = createListOfElfCalorieIntake( fileName );
-		Collections.sort( records );
-		Integer elf1 = records.get( records.size() - 1 );
-		Integer elf2 = records.get( records.size() - 2 );
-		Integer elf3 = records.get( records.size() - 3 );
-		return elf1 + elf2 + elf3;
+	public Integer runFindHighestCalorieIntakeForTopThreeElves( String fileName ) {
+		List<Integer> intake = createListOfElfCalorieIntake( fileName );
+		return findHighestCalorieIntakeForTopThreeElves( intake );
+	}
+
+	public Integer findHighestCalorieIntakeForTopThreeElves( List<Integer> intake){
+		Collections.sort( intake );
+		List<Integer> highestIntake;
+		if( intake.size() >= 3 ){
+			highestIntake = intake.subList( 0, 3 );
+		}else{
+			highestIntake = intake.subList( 0, intake.size() );
+		}
+		return highestIntake.stream().mapToInt(Integer::intValue).sum();
+	}
+
+	public Integer findHighestCalorieIntake( List<Integer> intake){
+		Collections.sort( intake );
+		return intake.get( intake.size() - 1 );
 	}
 
 	private List<Integer> createListOfElfCalorieIntake( String fileName ) {
