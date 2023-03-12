@@ -93,7 +93,7 @@ public class RucksackReorganisation {
 		Map<Character, Integer> tracker = new HashMap<>();
 		List<Character> results = new ArrayList<>();
 		List<String> sanitisedEntries = entries.stream()
-				.map( StringHelper::removeDuplicateChars )
+				.map( StringHelper::removeDuplicatedChars )
 				.collect( Collectors.toList() );
 		if ( sanitisedEntries.size() > 1 ) {
 			for ( String entry : sanitisedEntries ) {//go through the list of strings
