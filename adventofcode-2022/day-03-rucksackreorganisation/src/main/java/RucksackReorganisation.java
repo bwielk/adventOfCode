@@ -11,34 +11,34 @@ public class RucksackReorganisation {
 				RucksackReorganisation.class, file );
 		int total = 0;
 		for ( String e : entries ) {
-			total += calculatePointsForSharedCharacters(
-					findSharedElements( defineTwoCompartments( e ) ) );
+			total += calculatePointsForCommonCharacters(
+					findCommonCharacters( defineTwoCompartments( e ) ) );
 		}
 		return total;
 	}
 
-	public int runIdentificationOfCommonChars( String file ) {
+	public int runIdentificationOfCommonCharacters( String file ) {
 		List<String> entries = FileReaderHelper.readFileAsLinesOfStrings(
 				RucksackReorganisation.class, file );
-		return checkCommonCharsInChunksOfUpToThreeGroups( entries );
+		return checkCommonCharactersInChunksOfUpToThreeEntries( entries );
 	}
 
-	public int checkCommonCharsInChunksOfUpToThreeGroups( List<String> entries ) {
+	public int checkCommonCharactersInChunksOfUpToThreeEntries( List<String> entries ) {
 		int total = 0;
 		if ( entries.size() >= 3 && entries.size() % 3 == 0 ) {
 			for ( int i = 0; i < entries.size(); i++ ) {
 				List<String> group;
 				if ( entries.size() > 1 ) {
 					group = entries.subList( i, i + 3 );
-					List<Character> identifiedCharacters = findCommonCharacterInASeriesOfEntries(
+					List<Character> identifiedCharacters = findCommonCharactersInASeriesOfEntries(
 							group );
-					total += calculatePointsForSharedCharacters( identifiedCharacters );
+					total += calculatePointsForCommonCharacters( identifiedCharacters );
 					i += 2;
 				} else {
 					group = entries.subList( i, entries.size() );
-					List<Character> identifiedCharacters = findCommonCharacterInASeriesOfEntries(
+					List<Character> identifiedCharacters = findCommonCharactersInASeriesOfEntries(
 							group );
-					total += calculatePointsForSharedCharacters( identifiedCharacters );
+					total += calculatePointsForCommonCharacters( identifiedCharacters );
 				}
 			}
 		} else {
@@ -61,7 +61,7 @@ public class RucksackReorganisation {
 		return result;
 	}
 
-	public List<Character> findSharedElements( final List<String> input ) {
+	public List<Character> findCommonCharacters( final List<String> input ) {
 		List<Character> result = new ArrayList<>();
 		for ( Character c1 : input.get( 0 ).toCharArray() ) {
 			for ( Character c2 : input.get( 1 ).toCharArray() ) {
@@ -75,7 +75,7 @@ public class RucksackReorganisation {
 		return result;
 	}
 
-	public int calculatePointsForSharedCharacters( List<Character> listOfCharacters ) {
+	public int calculatePointsForCommonCharacters( List<Character> listOfCharacters ) {
 		int total = 0;
 		for ( Character c : listOfCharacters ) {
 			if ( Character.isLowerCase( c ) ) {
@@ -89,7 +89,7 @@ public class RucksackReorganisation {
 		return total;
 	}
 
-	public List<Character> findCommonCharacterInASeriesOfEntries( List<String> entries ) {
+	public List<Character> findCommonCharactersInASeriesOfEntries( List<String> entries ) {
 		Map<Character, Integer> tracker = new HashMap<>();
 		List<Character> results = new ArrayList<>();
 		List<String> sanitisedEntries = entries.stream()
