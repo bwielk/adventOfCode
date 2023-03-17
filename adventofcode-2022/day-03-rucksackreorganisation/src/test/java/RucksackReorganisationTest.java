@@ -71,7 +71,8 @@ class RucksackReorganisationTest {
 		assertThat( compartments ).isEmpty();
 	}
 
-	//TODO: implement the test and the logic of this part of the feature - lower priority due to the input
+	//TODO: implement the test and the logic of this part of the feature - lower priority due to the input - check this regex
+	//[\"\\#$%&()*+,\\s\n\r\t\\-./:;<=>@\\[\n\\\\\\]^_‘{|}~]
 	@Test
 	@Disabled
 	public void presenceOfNonAlphabeticalCharactersMakesEntryIgnored() {
