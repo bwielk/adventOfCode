@@ -258,14 +258,16 @@ class RucksackReorganisationTest {
 	public void theSizeOfInputThatIsNotDividableBy3IsRejected() {
 		List<String> entries = List.of( "aZ", "bZ", "zZ", "fA", "fc", "b f", "" );
 		assertThrows( IllegalArgumentException.class,
-				() -> rucksackReorganisation.checkCommonCharactersInChunksOfUpToThreeEntries( entries ) );
+				() -> rucksackReorganisation.checkCommonCharactersInChunksOfUpToThreeEntries(
+						entries ) );
 	}
 
 	@Test
 	public void theSizeOfInputThatIsLessThan3IsRejected() {
 		List<String> entries = List.of( "aZ", "bZ", "zZ", "fA", "fc" );
 		assertThrows( IllegalArgumentException.class,
-				() -> rucksackReorganisation.checkCommonCharactersInChunksOfUpToThreeEntries( entries ) );
+				() -> rucksackReorganisation.checkCommonCharactersInChunksOfUpToThreeEntries(
+						entries ) );
 	}
 
 	@Test
