@@ -27,7 +27,7 @@ class CampCleanupTest {
 
 	@Test
 	public void countForContainedPairsWorks() {
-		List<String> input = List.of("1, 6, 6, 6", "2, 4, 3, 5", "3, 3, 2, 6");
+		List<String> input = List.of( "1, 6, 6, 6", "2, 4, 3, 5", "3, 3, 2, 6" );
 		int result = campCleanup.calculateContainedPairs( input );
 		assertThat( result ).isEqualTo( 2 );
 	}
@@ -56,36 +56,62 @@ class CampCleanupTest {
 	@Test
 	public void valuesCannotBeExtractedFromInputs_negativeValuesInInputResultInNoParsing() {
 		String input = "-4--63,015-064";
-		assertThrows( NumberFormatException.class,
-				() -> campCleanup.parseEntry( input) );
+		assertThrows( NumberFormatException.class, () -> campCleanup.parseEntry( input ) );
 	}
 
 	@Test
 	public void valuesCannotBeExtractedFromInputs_attemptToCreate3PairsResultsInAnExceptionThrown() {
 		String input = "4-6,1-2,1-1";
 		Exception e = assertThrows( IllegalStateException.class,
-				() -> campCleanup.parseEntry( input) );
-		assertThat( e.getMessage() ).isEqualTo( "Only 4 values are accepted as input within the list" );
+				() -> campCleanup.parseEntry( input ) );
+		assertThat( e.getMessage() ).isEqualTo(
+				"Only 4 values are accepted as input within the list" );
 	}
 
 	@Test
 	public void valuesCannotBeExtractedFromInputs_attemptToCreateOnlyOnePairResultsInAnExceptionThrown() {
 		String input = "4-6";
 		Exception e = assertThrows( IllegalStateException.class,
-				() -> campCleanup.parseEntry( input) );
-		assertThat( e.getMessage() ).isEqualTo( "Only 4 values are accepted as input within the list" );
+				() -> campCleanup.parseEntry( input ) );
+		assertThat( e.getMessage() ).isEqualTo(
+				"Only 4 values are accepted as input within the list" );
+	}
+
+	@Test
+	public void valuesCannotBeExtractedFromInputs_pairsWithMoreThanOneDigit() {
+		String input = "4-6-7,1-2-3";
+		Exception e = assertThrows( IllegalStateException.class,
+				() -> campCleanup.parseEntry( input ) );
+		assertThat( e.getMessage() ).isEqualTo(
+				"Only 4 values are accepted as input within the list" );
+	}
+
+	@Test
+	public void valuesCanBeExtractedFromInputs_onlyDashesAsSeparators() {
+		String input = "4-6-0-1";
+		List<Integer> result = campCleanup.parseEntry( input );
+		assertThat( result ).containsExactlyInAnyOrder( 4, 6, 0, 1 );
+	}
+
+	@Test
+	public void valuesCanBeExtractedFromInputs_onlyCommasAsSeparators() {
+		String input = "4,6,0,1";
+		List<Integer> result = campCleanup.parseEntry( input );
+		assertThat( result ).containsExactlyInAnyOrder( 4, 6, 0, 1 );
 	}
 
 	private static Stream<Arguments> firstValueOfAPairGreaterThanTheSecondOne() {
-		return Stream.of( Arguments.of( "3-2,15-64" ), Arguments.of( "1-2,15-11" ));
+		return Stream.of( Arguments.of( "3-2,15-64" ), Arguments.of( "1-2,15-11" ) );
 	}
 
 	@ParameterizedTest
 	@MethodSource("firstValueOfAPairGreaterThanTheSecondOne")
-	public void valuesCannotBeExtractedFromInputs_firstDigitOfAPairGreaterThanTheSecondThrowsException(String input) {
+	public void valuesCannotBeExtractedFromInputs_firstDigitOfAPairGreaterThanTheSecondThrowsException(
+			String input ) {
 		Exception e = assertThrows( IllegalStateException.class,
-				() -> campCleanup.parseEntry( input) );
-		assertThat( e.getMessage() ).isEqualTo( "The first digit of a pair cannot be greater than the second one" );
+				() -> campCleanup.parseEntry( input ) );
+		assertThat( e.getMessage() ).isEqualTo(
+				"The first digit of a pair cannot be greater than the second one" );
 	}
 
 	@Test
@@ -139,14 +165,14 @@ class CampCleanupTest {
 
 	@Test
 	public void pairsOverlappingAtAll_singleSection() {
-		List<Integer> input = List.of( 5,7,7,9 );
+		List<Integer> input = List.of( 5, 7, 7, 9 );
 		boolean result = campCleanup.findIfPairsOverlapAtAll( input );
 		assertThat( result ).isTrue();
 	}
 
 	@Test
 	public void pairsOverlappingAtAll_entireSection() {
-		List<Integer> input = List.of( 6,9,2,8 );
+		List<Integer> input = List.of( 6, 9, 2, 8 );
 		boolean result = campCleanup.findIfPairsOverlapAtAll( input );
 		assertThat( result ).isTrue();
 	}
