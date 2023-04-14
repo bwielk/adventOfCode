@@ -76,7 +76,8 @@ class SupplyStacksTest {
 		stack6.push( 'B' );
 		stack6.push( 'S' );
 
-		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent( "stackscontainemptyvaluesinbetweencrates.txt" );
+		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent(
+				"stackscontainemptyvaluesinbetweencrates.txt" );
 		assertThat( actualStacks ).hasSize( 6 );
 
 		assertThat( actualStacks.get( 0 ) ).containsExactlyElementsOf( stack1 );
@@ -86,7 +87,6 @@ class SupplyStacksTest {
 		assertThat( actualStacks.get( 4 ) ).containsExactlyElementsOf( stack5 );
 		assertThat( actualStacks.get( 5 ) ).containsExactlyElementsOf( stack6 );
 	}
-
 
 	@Test
 	public void extractStacks_stacksCanContainAnyCharacterType() {
@@ -115,7 +115,8 @@ class SupplyStacksTest {
 		stack6.push( 'S' );
 		stack6.push( 'a' );
 
-		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent( "stackscontainingvariouschartypes.txt" );
+		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent(
+				"stackscontainingvariouschartypes.txt" );
 		assertThat( actualStacks ).hasSize( 6 );
 
 		assertThat( actualStacks.get( 0 ) ).containsExactlyElementsOf( stack1 );
@@ -146,7 +147,8 @@ class SupplyStacksTest {
 		Stack<Character> stack4 = new Stack<>();
 		stack4.push( 'V' );
 
-		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent( "columnnominatorcontainsrandomsingledigitnumbers.txt" );
+		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent(
+				"columnnominatorcontainsrandomsingledigitnumbers.txt" );
 		assertThat( actualStacks ).hasSize( 4 );
 
 		assertThat( actualStacks.get( 0 ) ).containsExactlyElementsOf( stack1 );
@@ -184,5 +186,21 @@ class SupplyStacksTest {
 		List<Stack<Character>> actualStacks = supplyStacks.generateStacksFromContent(
 				"columnnominatorwithnondigits.txt" );
 		assertThat( actualStacks ).hasSize( 0 );
+	}
+
+	@Test
+	public void extractCommands_commandsCanBeExtractedFromFileAmongstOtherContent() {
+		Command expectedCommand1 = new Command( 3,8,2 );
+		Command expectedCommand2 = new Command( 2,2,1 );
+		List<Command> actualCommands = supplyStacks.generateCommandsFromContent( "test.txt" );
+		assertThat( actualCommands ).hasSize( 2 );
+		Command actualCommand1 = actualCommands.get( 0 );
+		Command actualCommand2 = actualCommands.get( 1 );
+		assertThat( actualCommand1.getAmountOfCratesToMove() ).isEqualTo( expectedCommand1.getAmountOfCratesToMove() );
+		assertThat( actualCommand1.getEntryStackIndex() ).isEqualTo( expectedCommand1.getEntryStackIndex() );
+		assertThat( actualCommand1.getTargetStackIndex() ).isEqualTo( expectedCommand1.getTargetStackIndex() );
+		assertThat( actualCommand2.getAmountOfCratesToMove() ).isEqualTo( expectedCommand2.getAmountOfCratesToMove() );
+		assertThat( actualCommand2.getEntryStackIndex() ).isEqualTo( expectedCommand2.getEntryStackIndex() );
+		assertThat( actualCommand2.getTargetStackIndex() ).isEqualTo( expectedCommand2.getTargetStackIndex() );
 	}
 }
