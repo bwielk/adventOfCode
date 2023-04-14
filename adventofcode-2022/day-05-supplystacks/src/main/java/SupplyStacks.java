@@ -9,15 +9,26 @@ public class SupplyStacks {
 	private final List<Command> commands = new ArrayList<>();
 	private final String commandSyntaxRegex = "move \\d from \\d to \\d";
 
+	public List<Command> getCommands() {
+		return commands;
+	}
+
+	public List<Stack<Character>> getStacks() {
+		return stacks;
+	}
+
 	public void run(String nameOfFile){
-		generateCommandsFromContent( nameOfFile );
-		generateStacksFromContent( nameOfFile );
-		/// prototype
+		runMovingCrates( generateStacksFromContent( nameOfFile ), generateCommandsFromContent( nameOfFile ) );
+		System.out.println(stacks);
+	}
+
+	public List<Stack<Character>> runMovingCrates(List<Stack<Character>> stacks, List<Command> commands){
 		for(Command c : commands){
 			for(int pop=0; pop<c.getAmountOfCratesToMove(); pop++){
-				stacks.get( c.getTargetStackIndex() ).push( stacks.get( c.getEntryStackIndex() ).pop());
+				stacks.get( c.getTargetStackIndex()-1 ).push( stacks.get( c.getEntryStackIndex()-1 ).pop());
 			}
 		}
+		return stacks;
 	}
 
 	public List<Stack<Character>> generateStacksFromContent( String nameOfFile ) {

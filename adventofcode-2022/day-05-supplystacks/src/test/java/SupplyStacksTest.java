@@ -1,5 +1,6 @@
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Stream;
@@ -229,13 +230,13 @@ class SupplyStacksTest {
 
 	private static Stream<Arguments> caseInsensitiveText() {
 		return Stream.of( Arguments.of( List.of( "Move 1 from 2 to 1" ), new Command( 1, 2, 1 ) ),
-				Arguments.of( List.of( "MOVE 2 FROM 2 to 1" ), new Command( 2, 2,1 ) ) );
+				Arguments.of( List.of( "MOVE 2 FROM 2 to 1" ), new Command( 2, 2, 1 ) ) );
 	}
 
 	@ParameterizedTest
 	@MethodSource("caseInsensitiveText")
-	public void extractCommands_caseInsensitiveTextIsParsed(
-			List<String> input, Command expectedCommand ) {
+	public void extractCommands_caseInsensitiveTextIsParsed( List<String> input,
+			Command expectedCommand ) {
 		List<Command> actualCommands = supplyStacks.extractCommands( input );
 		assertThat( actualCommands ).hasSize( 1 );
 		Command actualCommand = actualCommands.get( 0 );
@@ -249,14 +250,16 @@ class SupplyStacksTest {
 
 	@Test
 	public void extractCommands_wronglyWordedCommandIsIgnored() {
-		List<Command> actualCommands = supplyStacks.extractCommands( List.of("Moved 2 from 2 to 1") );
+		List<Command> actualCommands = supplyStacks.extractCommands(
+				List.of( "Moved 2 from 2 to 1" ) );
 		assertThat( actualCommands ).hasSize( 0 );
 	}
 
 	@Test
 	public void extractCommands_wronglyWordedCommandIsIgnoredButCorrectOneIsParsedProperly() {
-		Command expectedCommand = new Command( 3,3,3 );
-		List<Command> actualCommands = supplyStacks.extractCommands( List.of("Moved 2 from 2 to 1", "Move 3 from 3 to 3" ) );
+		Command expectedCommand = new Command( 3, 3, 3 );
+		List<Command> actualCommands = supplyStacks.extractCommands(
+				List.of( "Moved 2 from 2 to 1", "Move 3 from 3 to 3" ) );
 		assertThat( actualCommands ).hasSize( 1 );
 		Command actualCommand = actualCommands.get( 0 );
 		assertThat( actualCommand.getAmountOfCratesToMove() ).isEqualTo(
@@ -269,8 +272,9 @@ class SupplyStacksTest {
 
 	@Test
 	public void extractCommands_trailingAndLeadingSpacesInCommandAreIngested() {
-		Command expectedCommand = new Command( 3,3,3 );
-		List<Command> actualCommands = supplyStacks.extractCommands( List.of("   Move 3 from 3 to 3   " ) );
+		Command expectedCommand = new Command( 3, 3, 3 );
+		List<Command> actualCommands = supplyStacks.extractCommands(
+				List.of( "   Move 3 from 3 to 3   " ) );
 		assertThat( actualCommands ).hasSize( 1 );
 		Command actualCommand = actualCommands.get( 0 );
 		assertThat( actualCommand.getAmountOfCratesToMove() ).isEqualTo(
@@ -280,4 +284,68 @@ class SupplyStacksTest {
 		assertThat( actualCommand.getTargetStackIndex() ).isEqualTo(
 				expectedCommand.getTargetStackIndex() );
 	}
+
+	@Test
+	public void movingCrates_movingCratesWorksForSimpleHappyPath() {
+		List<Stack<Character>> stacks = new ArrayList<>();
+		Stack<Character> stack1 = new Stack<>();
+		stack1.push( 'S' );
+		stack1.push( 'Q' );
+		stack1.push( 'S' );
+		stack1.push( 'Q' );
+		stacks.add( stack1 );
+
+		Stack<Character> stack2 = new Stack<>();
+		stack2.push( 'R' );
+		stack2.push( 'Q' );
+		stack2.push( 'R' );
+		stacks.add( stack2 );
+
+		Stack<Character> stack3 = new Stack<>();
+		stack3.push( 'Z' );
+		stack3.push( 'B' );
+		stacks.add( stack3 );
+
+		Stack<Character> stack4 = new Stack<>();
+		stack4.push( 'V' );
+		stacks.add( stack4 );
+
+		List<Command> commands = new ArrayList<>();
+		commands.add( new Command( 1, 1, 2 ) );
+		commands.add( new Command( 1, 1, 3 ) );
+		commands.add( new Command( 1, 1, 4 ) );
+
+		Stack<Character> expectedStack1 = new Stack<>();
+		expectedStack1.push( 'S' );
+
+		Stack<Character> expectedStack2 = new Stack<>();
+		expectedStack2.push( 'R' );
+		expectedStack2.push( 'Q' );
+		expectedStack2.push( 'R' );
+		expectedStack2.push( 'Q' );
+
+		Stack<Character> expectedStack3 = new Stack<>();
+		expectedStack3.push( 'Z' );
+		expectedStack3.push( 'B' );
+		expectedStack3.push( 'S' );
+
+		Stack<Character> expectedStack4 = new Stack<>();
+		expectedStack4.push( 'V' );
+		expectedStack4.push( 'Q' );
+
+		List<Stack<Character>> actualStacks = supplyStacks.runMovingCrates( stacks, commands );
+
+		assertThat( actualStacks).hasSize( 4 );
+
+		assertThat( actualStacks.get( 0 ) ).containsExactlyElementsOf( expectedStack1 );
+		assertThat( actualStacks.get( 1 ) ).containsExactlyElementsOf( expectedStack2 );
+		assertThat( actualStacks.get( 2 ) ).containsExactlyElementsOf( expectedStack3 );
+		assertThat( actualStacks.get( 3 ) ).containsExactlyElementsOf( expectedStack4 );
+	}
+
+	@Test
+	public void run(){
+		supplyStacks.run( "input.txt" );
+	}
+
 }
