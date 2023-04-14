@@ -9,6 +9,17 @@ public class SupplyStacks {
 	private final List<Command> commands = new ArrayList<>();
 	private final String commandSyntaxRegex = "move \\d from \\d to \\d";
 
+	public void run(String nameOfFile){
+		generateCommandsFromContent( nameOfFile );
+		generateStacksFromContent( nameOfFile );
+		/// prototype
+		for(Command c : commands){
+			for(int pop=0; pop<c.getAmountOfCratesToMove(); pop++){
+				stacks.get( c.getTargetStackIndex() ).push( stacks.get( c.getEntryStackIndex() ).pop());
+			}
+		}
+	}
+
 	public List<Stack<Character>> generateStacksFromContent( String nameOfFile ) {
 		List<String> readLines = FileReaderHelper.readFileAsLinesOfStrings( SupplyStacks.class,
 				nameOfFile );
@@ -42,7 +53,7 @@ public class SupplyStacks {
 		return commands;
 	}
 
-	private List<Stack<Character>> extractStacks( List<String> readLines ) {
+	public List<Stack<Character>> extractStacks( List<String> readLines ) {
 		int beginningOfStackMap = -1;
 		for ( String l : readLines ) {
 			if ( l.matches( UsefulRegex.ONLY_NUMBERS_WITH_SPACES ) && !l.isEmpty() ) {
