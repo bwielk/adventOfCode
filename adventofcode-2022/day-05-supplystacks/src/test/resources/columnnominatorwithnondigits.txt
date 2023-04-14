@@ -1,0 +1,7 @@
+[Q]
+[S] [R]             [U]
+[Q] [Q] [B]         [S]
+[S] [R] [Z] [V]     [B]
+ 1   2   E   4   5   B
+
+move 3 from 8 to 2
