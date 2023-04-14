@@ -21,19 +21,21 @@ public class SupplyStacks {
 		return extractCommands( readLines );
 	}
 
-	private List<Command> extractCommands(List<String> readLines){
-		for( String l : readLines) {
-			if(l.matches( commandSyntaxRegex )){
-				String foundCommand = l;
-				List<String> splitFoundCommand = Arrays.asList( foundCommand.split( " " ));
+	public List<Command> extractCommands( List<String> readLines ) {
+		for ( String l : readLines ) {
+			String sanitisedString =  l.toLowerCase().trim();
+			if ( sanitisedString.matches( commandSyntaxRegex ) ) {
+				List<String> splitFoundCommand = Arrays.asList( sanitisedString.split( " " ) );
 				List<Integer> foundCommandArgs = new ArrayList<>();
-				for(String w : splitFoundCommand){
-					if(w.chars().allMatch( Character::isDigit )){
+				for ( String w : splitFoundCommand ) {
+					if ( w.chars().allMatch( Character::isDigit ) && ( Integer.parseInt(
+							w ) > 0 && Integer.parseInt( w ) < 10 ) ) {
 						foundCommandArgs.add( Integer.parseInt( w ) );
 					}
 				}
-				if(foundCommandArgs.size() == 3){
-					commands.add( new Command( foundCommandArgs.get(0), foundCommandArgs.get(1), foundCommandArgs.get(2) ) );
+				if ( foundCommandArgs.size() == 3 ) {
+					commands.add( new Command( foundCommandArgs.get( 0 ), foundCommandArgs.get( 1 ),
+							foundCommandArgs.get( 2 ) ) );
 				}
 			}
 		}

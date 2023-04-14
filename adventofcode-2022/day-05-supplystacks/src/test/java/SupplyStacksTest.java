@@ -2,9 +2,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class SupplyStacksTest {
 
@@ -190,17 +194,90 @@ class SupplyStacksTest {
 
 	@Test
 	public void extractCommands_commandsCanBeExtractedFromFileAmongstOtherContent() {
-		Command expectedCommand1 = new Command( 3,8,2 );
-		Command expectedCommand2 = new Command( 2,2,1 );
+		Command expectedCommand1 = new Command( 3, 8, 2 );
+		Command expectedCommand2 = new Command( 2, 2, 1 );
 		List<Command> actualCommands = supplyStacks.generateCommandsFromContent( "test.txt" );
 		assertThat( actualCommands ).hasSize( 2 );
 		Command actualCommand1 = actualCommands.get( 0 );
 		Command actualCommand2 = actualCommands.get( 1 );
-		assertThat( actualCommand1.getAmountOfCratesToMove() ).isEqualTo( expectedCommand1.getAmountOfCratesToMove() );
-		assertThat( actualCommand1.getEntryStackIndex() ).isEqualTo( expectedCommand1.getEntryStackIndex() );
-		assertThat( actualCommand1.getTargetStackIndex() ).isEqualTo( expectedCommand1.getTargetStackIndex() );
-		assertThat( actualCommand2.getAmountOfCratesToMove() ).isEqualTo( expectedCommand2.getAmountOfCratesToMove() );
-		assertThat( actualCommand2.getEntryStackIndex() ).isEqualTo( expectedCommand2.getEntryStackIndex() );
-		assertThat( actualCommand2.getTargetStackIndex() ).isEqualTo( expectedCommand2.getTargetStackIndex() );
+		assertThat( actualCommand1.getAmountOfCratesToMove() ).isEqualTo(
+				expectedCommand1.getAmountOfCratesToMove() );
+		assertThat( actualCommand1.getEntryStackIndex() ).isEqualTo(
+				expectedCommand1.getEntryStackIndex() );
+		assertThat( actualCommand1.getTargetStackIndex() ).isEqualTo(
+				expectedCommand1.getTargetStackIndex() );
+		assertThat( actualCommand2.getAmountOfCratesToMove() ).isEqualTo(
+				expectedCommand2.getAmountOfCratesToMove() );
+		assertThat( actualCommand2.getEntryStackIndex() ).isEqualTo(
+				expectedCommand2.getEntryStackIndex() );
+		assertThat( actualCommand2.getTargetStackIndex() ).isEqualTo(
+				expectedCommand2.getTargetStackIndex() );
+	}
+
+	private static Stream<Arguments> commandIsNotParsedIfOneOfTheValuesIsNotIn1To9Range() {
+		return Stream.of( Arguments.of( List.of( "move 0 from 2 to 1" ) ),
+				Arguments.of( List.of( "move 2 from 2 to 10" ) ) );
+	}
+
+	@ParameterizedTest
+	@MethodSource("commandIsNotParsedIfOneOfTheValuesIsNotIn1To9Range")
+	public void extractCommands_commandIsNotParsedIfOneOfTheValuesIsNotIn1To9Range(
+			List<String> input ) {
+		List<Command> actualCommands = supplyStacks.extractCommands( input );
+		assertThat( actualCommands ).hasSize( 0 );
+	}
+
+	private static Stream<Arguments> caseInsensitiveText() {
+		return Stream.of( Arguments.of( List.of( "Move 1 from 2 to 1" ), new Command( 1, 2, 1 ) ),
+				Arguments.of( List.of( "MOVE 2 FROM 2 to 1" ), new Command( 2, 2,1 ) ) );
+	}
+
+	@ParameterizedTest
+	@MethodSource("caseInsensitiveText")
+	public void extractCommands_caseInsensitiveTextIsParsed(
+			List<String> input, Command expectedCommand ) {
+		List<Command> actualCommands = supplyStacks.extractCommands( input );
+		assertThat( actualCommands ).hasSize( 1 );
+		Command actualCommand = actualCommands.get( 0 );
+		assertThat( actualCommand.getAmountOfCratesToMove() ).isEqualTo(
+				expectedCommand.getAmountOfCratesToMove() );
+		assertThat( actualCommand.getEntryStackIndex() ).isEqualTo(
+				expectedCommand.getEntryStackIndex() );
+		assertThat( actualCommand.getTargetStackIndex() ).isEqualTo(
+				expectedCommand.getTargetStackIndex() );
+	}
+
+	@Test
+	public void extractCommands_wronglyWordedCommandIsIgnored() {
+		List<Command> actualCommands = supplyStacks.extractCommands( List.of("Moved 2 from 2 to 1") );
+		assertThat( actualCommands ).hasSize( 0 );
+	}
+
+	@Test
+	public void extractCommands_wronglyWordedCommandIsIgnoredButCorrectOneIsParsedProperly() {
+		Command expectedCommand = new Command( 3,3,3 );
+		List<Command> actualCommands = supplyStacks.extractCommands( List.of("Moved 2 from 2 to 1", "Move 3 from 3 to 3" ) );
+		assertThat( actualCommands ).hasSize( 1 );
+		Command actualCommand = actualCommands.get( 0 );
+		assertThat( actualCommand.getAmountOfCratesToMove() ).isEqualTo(
+				expectedCommand.getAmountOfCratesToMove() );
+		assertThat( actualCommand.getEntryStackIndex() ).isEqualTo(
+				expectedCommand.getEntryStackIndex() );
+		assertThat( actualCommand.getTargetStackIndex() ).isEqualTo(
+				expectedCommand.getTargetStackIndex() );
+	}
+
+	@Test
+	public void extractCommands_trailingAndLeadingSpacesInCommandAreIngested() {
+		Command expectedCommand = new Command( 3,3,3 );
+		List<Command> actualCommands = supplyStacks.extractCommands( List.of("   Move 3 from 3 to 3   " ) );
+		assertThat( actualCommands ).hasSize( 1 );
+		Command actualCommand = actualCommands.get( 0 );
+		assertThat( actualCommand.getAmountOfCratesToMove() ).isEqualTo(
+				expectedCommand.getAmountOfCratesToMove() );
+		assertThat( actualCommand.getEntryStackIndex() ).isEqualTo(
+				expectedCommand.getEntryStackIndex() );
+		assertThat( actualCommand.getTargetStackIndex() ).isEqualTo(
+				expectedCommand.getTargetStackIndex() );
 	}
 }
