@@ -1,34 +1,44 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
 
 public class SupplyStacks {
 
-	private final List<Stack<Character>> stacks = new ArrayList<>();
-	private final List<Command> commands = new ArrayList<>();
-	private final String commandSyntaxRegex = "move \\d from \\d to \\d";
+	private final String commandSyntaxRegex = "move [0-9]+ from \\d to \\d";
 
-	public List<Command> getCommands() {
-		return commands;
+	public String runWithReturningTopElementsOfStacks( String nameOfFile ) {
+		List<Stack<Character>> result = runMovingCrates( generateStacksFromContent( nameOfFile ),
+				generateCommandsFromContent( nameOfFile ) );
+		return printLastElementsOfStacks( result );
 	}
 
-	public List<Stack<Character>> getStacks() {
-		return stacks;
-	}
-
-	public void run(String nameOfFile){
-		runMovingCrates( generateStacksFromContent( nameOfFile ), generateCommandsFromContent( nameOfFile ) );
-		System.out.println(stacks);
-	}
-
-	public List<Stack<Character>> runMovingCrates(List<Stack<Character>> stacks, List<Command> commands){
-		for(Command c : commands){
-			for(int pop=0; pop<c.getAmountOfCratesToMove(); pop++){
-				stacks.get( c.getTargetStackIndex()-1 ).push( stacks.get( c.getEntryStackIndex()-1 ).pop());
+	public List<Stack<Character>> runMovingCrates( List<Stack<Character>> stacks,
+			List<Command> commands ) {
+		for ( Command c : commands ) {
+			for ( int pop = 0; pop < c.getAmountOfCratesToMove(); pop++ ) {
+				try {
+					stacks.get( c.getTargetStackIndex() - 1 )
+							.push( stacks.get( c.getEntryStackIndex() - 1 ).pop() );
+				} catch ( EmptyStackException e ) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return stacks;
+	}
+
+	public String printLastElementsOfStacks( List<Stack<Character>> stacks ) {
+		StringBuilder sb = new StringBuilder();
+		for ( Stack<Character> s : stacks ) {
+			if ( !s.isEmpty() ) {
+				sb.append( s.lastElement() );
+			}
+		}
+		String result = String.format( "Top elements of stacks from left to right:\n %s", sb );
+		System.out.println( result );
+		return result;
 	}
 
 	public List<Stack<Character>> generateStacksFromContent( String nameOfFile ) {
@@ -44,18 +54,22 @@ public class SupplyStacks {
 	}
 
 	public List<Command> extractCommands( List<String> readLines ) {
+		List<Command> commands = new ArrayList<>();
 		for ( String l : readLines ) {
-			String sanitisedString =  l.toLowerCase().trim();
+			String sanitisedString = l.toLowerCase().trim();
 			if ( sanitisedString.matches( commandSyntaxRegex ) ) {
 				List<String> splitFoundCommand = Arrays.asList( sanitisedString.split( " " ) );
 				List<Integer> foundCommandArgs = new ArrayList<>();
 				for ( String w : splitFoundCommand ) {
-					if ( w.chars().allMatch( Character::isDigit ) && ( Integer.parseInt(
-							w ) > 0 && Integer.parseInt( w ) < 10 ) ) {
+					if ( w.chars().allMatch( Character::isDigit ) ) {
 						foundCommandArgs.add( Integer.parseInt( w ) );
 					}
 				}
-				if ( foundCommandArgs.size() == 3 ) {
+				// entry target cannot be equal to end target
+				if ( foundCommandArgs.size() == 3 &&
+						( !foundCommandArgs.get( 1 ).equals( foundCommandArgs.get( 2 ) )
+								&& ( foundCommandArgs.get( 1 ) > 0 && foundCommandArgs.get( 1 ) < 10 )
+								&& ( foundCommandArgs.get( 2 ) > 0 && foundCommandArgs.get( 2 ) < 10 ))) {
 					commands.add( new Command( foundCommandArgs.get( 0 ), foundCommandArgs.get( 1 ),
 							foundCommandArgs.get( 2 ) ) );
 				}
@@ -65,6 +79,7 @@ public class SupplyStacks {
 	}
 
 	public List<Stack<Character>> extractStacks( List<String> readLines ) {
+		List<Stack<Character>> stacks = new ArrayList<>();
 		int beginningOfStackMap = -1;
 		for ( String l : readLines ) {
 			if ( l.matches( UsefulRegex.ONLY_NUMBERS_WITH_SPACES ) && !l.isEmpty() ) {
