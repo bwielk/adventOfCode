@@ -9,13 +9,15 @@ public class SupplyStacks {
 	private final String commandSyntaxRegex = "move [0-9]+ from \\d to \\d";
 
 	public String runMovingSingleCratesWithReturningTopElementsOfStacks( String nameOfFile ) {
-		List<Stack<Character>> result = runMovingCratesOneByOne( generateStacksFromContent( nameOfFile ),
+		List<Stack<Character>> result = runMovingCratesOneByOne(
+				generateStacksFromContent( nameOfFile ),
 				generateCommandsFromContent( nameOfFile ) );
 		return printLastElementsOfStacks( result );
 	}
 
 	public String runMovingBatchesWithReturningTopElementsOfStacks( String nameOfFile ) {
-		List<Stack<Character>> result = runMovingCratesInBatches( generateStacksFromContent( nameOfFile ),
+		List<Stack<Character>> result = runMovingCratesInBatches(
+				generateStacksFromContent( nameOfFile ),
 				generateCommandsFromContent( nameOfFile ) );
 		return printLastElementsOfStacks( result );
 	}
@@ -42,13 +44,13 @@ public class SupplyStacks {
 			for ( int pop = 0; pop < c.getAmountOfCratesToMove(); pop++ ) {
 
 				try {
-					tempList.add(stacks.get( c.getEntryStackIndex() - 1 ).pop() );
+					tempList.add( stacks.get( c.getEntryStackIndex() - 1 ).pop() );
 				} catch ( EmptyStackException e ) {
 					e.printStackTrace();
 				}
 			}
-			for(int ch=tempList.size()-1; ch>=0; ch--){
-				stacks.get( c.getTargetStackIndex() -1 ).push( tempList.get( ch ) );
+			for ( int ch = tempList.size() - 1; ch >= 0; ch-- ) {
+				stacks.get( c.getTargetStackIndex() - 1 ).push( tempList.get( ch ) );
 			}
 		}
 		return stacks;
@@ -91,10 +93,10 @@ public class SupplyStacks {
 					}
 				}
 				// entry target cannot be equal to end target
-				if ( foundCommandArgs.size() == 3 &&
-						( !foundCommandArgs.get( 1 ).equals( foundCommandArgs.get( 2 ) )
-								&& ( foundCommandArgs.get( 1 ) > 0 && foundCommandArgs.get( 1 ) < 10 )
-								&& ( foundCommandArgs.get( 2 ) > 0 && foundCommandArgs.get( 2 ) < 10 ))) {
+				if ( foundCommandArgs.size() == 3 && ( !foundCommandArgs.get( 1 )
+						.equals( foundCommandArgs.get( 2 ) ) && ( foundCommandArgs.get(
+						1 ) > 0 && foundCommandArgs.get( 1 ) < 10 ) && ( foundCommandArgs.get(
+						2 ) > 0 && foundCommandArgs.get( 2 ) < 10 ) ) ) {
 					commands.add( new Command( foundCommandArgs.get( 0 ), foundCommandArgs.get( 1 ),
 							foundCommandArgs.get( 2 ) ) );
 				}
