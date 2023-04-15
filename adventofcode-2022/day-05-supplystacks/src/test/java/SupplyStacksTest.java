@@ -20,6 +20,11 @@ class SupplyStacksTest {
 		supplyStacks = new SupplyStacks();
 	}
 
+	//TODO: nominator header of single digit numbers preceded by another one with chars
+	//TODO: duplicated header of single digit numbers
+	//TODO: duplicated header of 1+ digit numbers
+	//TODO: nominator aligning with brackets wrapping chars - these should be ignored
+
 	@Test
 	public void extractStacks_happyPathWithMixtureOfStackHeights() {
 		Stack<Character> stack1 = new Stack<>();

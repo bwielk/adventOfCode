@@ -8,4 +8,10 @@ public class StringHelper {
 				.distinct()
 				.collect( Collectors.joining() );
 	}
+
+	public static boolean isStringMadeOfUniqueChars(String input){
+		return input.toLowerCase().chars().distinct().count()==input.length();
+	}
+
+
 }
