@@ -8,13 +8,19 @@ public class SupplyStacks {
 
 	private final String commandSyntaxRegex = "move [0-9]+ from \\d to \\d";
 
-	public String runWithReturningTopElementsOfStacks( String nameOfFile ) {
-		List<Stack<Character>> result = runMovingCrates( generateStacksFromContent( nameOfFile ),
+	public String runMovingSingleCratesWithReturningTopElementsOfStacks( String nameOfFile ) {
+		List<Stack<Character>> result = runMovingCratesOneByOne( generateStacksFromContent( nameOfFile ),
 				generateCommandsFromContent( nameOfFile ) );
 		return printLastElementsOfStacks( result );
 	}
 
-	public List<Stack<Character>> runMovingCrates( List<Stack<Character>> stacks,
+	public String runMovingBatchesWithReturningTopElementsOfStacks( String nameOfFile ) {
+		List<Stack<Character>> result = runMovingCratesInBatches( generateStacksFromContent( nameOfFile ),
+				generateCommandsFromContent( nameOfFile ) );
+		return printLastElementsOfStacks( result );
+	}
+
+	public List<Stack<Character>> runMovingCratesOneByOne( List<Stack<Character>> stacks,
 			List<Command> commands ) {
 		for ( Command c : commands ) {
 			for ( int pop = 0; pop < c.getAmountOfCratesToMove(); pop++ ) {
@@ -24,6 +30,25 @@ public class SupplyStacks {
 				} catch ( EmptyStackException e ) {
 					e.printStackTrace();
 				}
+			}
+		}
+		return stacks;
+	}
+
+	public List<Stack<Character>> runMovingCratesInBatches( List<Stack<Character>> stacks,
+			List<Command> commands ) {
+		for ( Command c : commands ) {
+			List<Character> tempList = new ArrayList<>();
+			for ( int pop = 0; pop < c.getAmountOfCratesToMove(); pop++ ) {
+
+				try {
+					tempList.add(stacks.get( c.getEntryStackIndex() - 1 ).pop() );
+				} catch ( EmptyStackException e ) {
+					e.printStackTrace();
+				}
+			}
+			for(int ch=tempList.size()-1; ch>=0; ch--){
+				stacks.get( c.getTargetStackIndex() -1 ).push( tempList.get( ch ) );
 			}
 		}
 		return stacks;
