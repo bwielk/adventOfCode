@@ -81,7 +81,7 @@ public class GiftStationaryCalculator {
 			int sideC = measurements.get( 0 ) * measurements.get( 2 );
 
 			List<Integer> collectionOfAreaValues = Arrays.asList( sideA, sideB, sideC );
-			int slack = ListHelper.identifyTheSmallestValueInArrayListOfIntegers(
+			int slack = ListHelper.findSmallestValueInListOfIntegers(
 					collectionOfAreaValues );
 			result += 2 * ( sideA + sideB + sideC ) + slack;
 		}
