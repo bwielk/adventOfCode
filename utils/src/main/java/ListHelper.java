@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListHelper {
@@ -7,6 +8,16 @@ public class ListHelper {
 		for ( int i = 0; i < integerList.size(); i++ ) {
 			if ( integerList.get( i ) < result ) {
 				result = integerList.get( i );
+			}
+		}
+		return result;
+	}
+
+	public static int findLongestStringInList( List<String> input ) {
+		int result = input.get( 0).length();
+		for ( String s : input ) {
+			if ( s.length() > result ) {
+				result = s.length();
 			}
 		}
 		return result;
@@ -28,5 +39,15 @@ public class ListHelper {
 			}
 		}
 		return true;
+	}
+
+	public static boolean checkIfIntIsGreaterThanAtLeastOneIntInList( List<Integer> integerList, int value ) {
+		List<Integer> results = new ArrayList<>();
+		for ( Integer integer : integerList ) {
+			if ( integer < value ) {
+				results.add( value );
+			}
+		}
+		return results.size()>1;
 	}
 }

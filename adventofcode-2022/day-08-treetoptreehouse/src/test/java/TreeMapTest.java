@@ -56,6 +56,31 @@ class TreeMapTest {
 	}
 
 	@Test
+	public void visibleTrees_edgeTreesCanBeExtracted() {
+		int[] row1 = { 2, 1, 1 };
+		int[] row2 = { 1, 0, 1 };
+		int[] row3 = { 2, 1, 2 };
+		int[][] map = { row1, row2, row3 };
+
+		List<TreeCoord> treeCoords = treeMap.findVisibleTrees( map );
+		assertThat( treeCoords ).hasSize( 8 );
+		for(TreeCoord tc : treeCoords){
+			assert tc.getValue() != 0;
+		}
+	}
+
+	@Test
+	public void visibleTrees_edgeTreesCanBeExtractedAndTheTallestTreeInTheMiddleIsIdentified() {
+		int[] row1 = { 2, 1, 1 };
+		int[] row2 = { 1, 3, 1 };
+		int[] row3 = { 2, 1, 2 };
+		int[][] map = { row1, row2, row3 };
+
+		List<TreeCoord> treeCoords = treeMap.findVisibleTrees( map );
+		assertThat( treeCoords ).hasSize( 9 );
+	}
+
+	@Test
 	public void tallestTreeIsFoundIfSurroundedByShorterTrees_tallestTreesOnSides() {
 		int[] row1 = { 1, 5, 1 };
 		int[] row2 = { 4, 1, 3 };
@@ -116,6 +141,25 @@ class TreeMapTest {
 		int[][] map = { row1, row2, row3 };
 
 		List<TreeCoord> treeCoords = treeMap.findTallTrees( map );
+		assertThat( treeCoords ).hasSize( 0 );
+	}
+
+	@Test
+	public void findingTallTrees_findFromFile() {
+		List<TreeCoord> treeCoords = treeMap.findTallTreesFromFile( "test.txt" );
+		assertThat( treeCoords ).hasSize( 7 );
+	}
+
+	@Test
+	public void findingVisibleTrees_findFromFile() {
+		List<TreeCoord> treeCoords = treeMap.findVisibleTreesFromFile( "test.txt" );
+		assertThat( treeCoords ).hasSize( 21 );
+	}
+
+
+	@Test
+	public void findingTallTrees_findFromMasterFile() {
+		List<TreeCoord> treeCoords = treeMap.findVisibleTreesFromFile( "input.txt" );
 		assertThat( treeCoords ).hasSize( 0 );
 	}
 }
